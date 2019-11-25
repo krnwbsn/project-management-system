@@ -9,9 +9,9 @@ router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
 module.exports = (pool) => {
-  /* GET home page. */
-  router.get('/', function (req, res, next) {
-    res.render('index', { title: 'Express' });
-  });
-  return router;
+    /* GET home page. */
+    router.get('/', function (req, res, next) {
+        res.render('index', { title: 'Express' });
+    });
+    return router;
 }
