@@ -1,0 +1,61 @@
+<% include ../partials/header %>
+<% include ../partials/menu %>
+<div class="container-fluid" style="margin-top: 20px">
+    <h1>Edit User</h1>
+    <hr />
+    <form action="/" method="post">
+        <div class="form-group row">
+            <label for="firstName" class="col-sm-1 col-form-label">First Name</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="lastName" class="col-sm-1 col-form-label">Last Name</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="emailAddress" class="col-sm-1 col-form-label">Email Address</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="emailAddress" placeholder="Email Address"
+                    name="emailAddress" required autofocus>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="accountPassword" class="col-sm-1 col-form-label">Password</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" id="accountPassword" placeholder="Password"
+                    name="accountPassword" required autofocus>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="member" class="col-sm-1 col-form-label">Position</label>
+            <div class="col-sm-2">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="position" value="manager">
+                    <label class="form-check-label" for="manager">
+                        Manager
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="position" value="softwareDeveloper">
+                    <label class="form-check-label" for="softwareDeveloper">
+                        Software Developer
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="position" value="qualityAssurance">
+                    <label class="form-check-label" for="qualityAssurance">
+                        Quality Assurance
+                    </label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Update</button>
+        <a href="users.html"><button type="button" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
+                Cancel</button></a>
+    </form>
+</div>
+<% include ../partials/footer %>

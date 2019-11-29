@@ -1,0 +1,114 @@
+<% include ../../partials/header %>
+<% include ../../partials/menu %>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <% include ../../partials/sidebar %>
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <h1>Members</h1>
+            <hr />
+            <h3><i class="fas fa-filter"></i> Filters</h3>
+            <form action="/" method="post">
+                <div class="form-group row">
+                    <label for="id" class="col-sm-1 col-form-label"><input type="checkbox" name="check_id"> ID</label>
+                    <div class="col-sm-2">
+                        <input type="number" class="form-control" id="id" placeholder="ID" name="id">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="name" class="col-sm-1 col-form-label"><input type="checkbox" name="check_name">
+                        Name</label>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control" id="name" placeholder="Name" name="name">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="role" class="col-sm-1 col-form-label"><input type="checkbox" name="check_role">
+                        Role</label>
+                    <div class="col-sm-2">
+                        <select id="role" class="form-control" name="role">
+                            <option disabled selected>Choose the role...</option>
+                            <option value="manager">Manager</option>
+                            <option value="softwareDeveloper">Software Developer</option>
+                            <option value="qualityAssurance">Quality Assurance</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+                <button class="btn btn-outline-primary" href="/projects"><i class="fas fa-sync-alt"></i> Reset</button>
+            </form>
+            <hr />
+            <h3><i class="fas fa-columns"></i> Options</h3>
+            <form>
+                <div class="form-group row">
+                    <div class="col-sm-1">Column</div>
+                    <div class="col-sm-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="id" value="id">
+                            <label class="form-check-label" for="id">
+                                ID
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="name" value="name">
+                            <label class="form-check-label" for="name">
+                                Name
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="role" value="role">
+                            <label class="form-check-label" for="role">
+                                Role
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Apply</button>
+            </form>
+            <table class="table table-striped" style="margin-top: 10px">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Krina Wibisana</td>
+                        <td>Manager</td>
+                        <td><a href="/projects/members/edit"><button type="button" class="btn btn-outline-success"><i
+                                        class="fas fa-edit"></i> Edit</button></a>
+                            <a href="delete/:id"><button type="button" class="btn btn-outline-danger"><i
+                                        class="fas fa-trash"></i>
+                                    Delete</button></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <nav aria-label="...">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1<span
+                                class="sr-only">(current)</span></a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+            <a href="/add"><button class="btn btn-primary"><i class="fas fa-plus"></i> Add</button></a>
+        </div>
+    </div>
+</div>
+<% include ../../partials/footer %>

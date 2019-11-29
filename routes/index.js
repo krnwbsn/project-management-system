@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const path = require('path');
 const isLoggedIn = (req, res, next) => {
   if (req.session.user) {
     next();
@@ -11,13 +12,11 @@ const isLoggedIn = (req, res, next) => {
   }
 };
 const isLoggedOut = (req, res, next) => {
-  isLoggedOut: (req, res, next) => {
-    if (req.session.user) {
-      res.redirect('/projects');
+  if (req.session.user) {
+      res.redirect('/index');
     } else {
       next();
     }
-  }
 };
 
 const moment = require('moment');
@@ -32,7 +31,7 @@ router.use(bodyParser.json())
 module.exports = (pool) => {
   // log in session
   router.get('/', function(req, res, next) {
-    res.render('index', { info: req.flash('info'), latestUrl: req.session.latestUrl, error: req.flash('error')[0] });
+    res.render('index', { info: req.flash('info'), error: req.flash('error')[0] });
   });
 
   router.post('/login', function(req, res, next) {
@@ -60,7 +59,7 @@ module.exports = (pool) => {
       if (err) throw err;
       res.redirect('/');
     })
-  })
+  });
 
   return router;
 }
