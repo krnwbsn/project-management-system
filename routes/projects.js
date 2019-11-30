@@ -29,64 +29,78 @@ module.exports = (pool) => {
         const url = req.url == '/' ? '/?page=1' : req.url;
 
 
-        if (req.query.projectid && req.query.check_id) {
+        if (req.query.check_projectid && req.query.projectid) {
             params.push(`projectid = ${req.query.projectid}`)
         };
-        if (req.query.name && req.query.check_name) {
+        if (req.query.check_projectname && req.query.projectname) {
             params.push(`projectname ILIKE '%${req.query.projectname.toLowerCase()}%'`)
         };
-        if (req.query.member && req.query.check_member) {
-            params.push(`users.users.id IN ('SELECT userid FROM members WHERE projectid IN ('SELECT projectid FROM members WHERE userid = ${member}')')`)
+        if (req.query.check_member && req.query.member) {
+            params.push(`users.userid IN ('SELECT userid FROM members WHERE projectid IN ('SELECT projectid FROM members WHERE userid = ${member}')')`)
         };
-        
+
+        // console.log('Query ' + req.query)
+
         // sql for Filter
-        let sqlFilter = `SELECT COUNT(members.projectid) total, ARRAY_AGG(userid) member, projectid, MAX(projects.name) projectname, STRING_AGG(users.firstname, ' ', users.lastname), ', ') fullname FROM members INNER JOIN projects USING (projectid) INNER JOIN users USING (userid)`;
+        let sql = `SELECT COUNT(members.projectid) total, ARRAY_AGG(userid) member, projectid, MAX(projects.name) projectname, STRING_AGG(CONCAT(users.firstname, ' ', users.lastname), ', ') fullname FROM members INNER JOIN projects USING(projectid) INNER JOIN users USING(userid)`;
         if (params.length > 0) {
-            sqlFilter += ` WHERE ${result.join(' AND ')}`;
+            sql += ` WHERE ${params.join(' AND ')}`;
         }
-        sqlFilter += `GROUP BY projectid ORDER BY projectid`;
+        sql += ` GROUP BY projectid ORDER BY projectid`;
+        // console.log('Count ' + sql)
 
-        pool.query(sqlFilter, (err, response) => {
-            if (err) {throw err};
-            let total = response.rows.length;
-            let pages = Math.ceil(total / limit);
+        pool.query(sql, (err, response) => {
+            if (err) {
+                return res.send(err)
+            };
+            const total = response.rows[0].total;
+            const pages = Math.ceil(total / limit);
 
-            // data projects
-            let sqlProjects = `SELECT members.projectid, MAX(projects.name) projectname, ARRAY_AGG(userid) member, STRING_AGG(CONCAT(users.firstname, ' ', users.lastname), ', ') fullname FROM members INNER JOIN projects USING (projectid) INNER JOIN users USING (userid)`
+            // data
+            let sql = `SELECT members.projectid, MAX(projects.name) projectname, ARRAY_AGG(userid) member, STRING_AGG(CONCAT(users.firstname, ' ', users.lastname), ', ') fullname FROM members INNER JOIN projects USING (projectid) INNER JOIN users USING (userid)`
             if (params.length > 0) {
-                sqlProjects += ` WHERE ${params.join(' AND ')}`;
+                sql += ` WHERE ${params.join(' AND ')}`;
             }
-
+            
             // pagination
             sql += ` GROUP BY projectid ORDER BY projectid LIMIT ${limit} OFFSET ${offset}`;
 
             // filter member
-            let sqlUser = `SELECT users.userid, 
-            CONCAT(users.firstname,' ',users.lastname) fullname 
-            FROM users GROUP BY userid`;
+            let sqlUsers = `SELECT users.userid, CONCAT(users.firstname,' ',users.lastname) fullname FROM users GROUP BY userid`;
 
-            const getTable = pool.query(sql);
-            const getUsers = pool.query(sqlUser);
-
-            // promise for rendering SQL
-            Promise.all([getTable, getUsers])
-                .then(result => {
-                    const data = results[0].rows;
-                    const dataUsers = results[1].rows;
-                    let fullname = dataUsers.map(x => x.fullname);
-                    let dataMembers = dataUsers.map(y => y.userid);
-                    res.render('projects/list', {
-                        title: 'Projects',
-                        path: 'projects',
-                        data,
-                        query: req.query,
-                        pages,
-                        url,
-                        fullname,
-                        dataMembers
-                    });
-                })
-                .catch(err => console.error(err));
+            pool.query(sql, (err, response) => {
+                if (err){
+                    return res.send(err)
+                }
+                res.render('projects/list', {
+                    title: 'Projects',
+                    path: 'projects',
+                    data: response.rows,
+                    query: req.query,
+                    pagination: { pages, page, url },
+                    fullname: response.rows.map(x => x.fullname),
+                    moment,
+                    dataMembers: response.rows.map(y => y.userid)
+                });
+                // console.log('Data Pool ' + sql)
+            });
+            
+            pool.query(sqlUsers, (err, response) => {
+                if (err) {
+                    return res.send(err)
+                }
+                res.render('projects/list', {
+                    title: 'Projects',
+                    path: 'projects',
+                    data: response.rows,
+                    query: req.query,
+                    pagination: { pages, page, url },
+                    fullname: response.rows.map(x => x.fullname),
+                    moment,
+                    dataMembers: response.rows.map(y => y.userid)
+                });
+                // console.log('Users Pool ' + sqlUsers)
+            });
         });
     });
 

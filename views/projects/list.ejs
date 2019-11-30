@@ -6,25 +6,26 @@
     <h3><i class="fas fa-filter"></i> Filters</h3>
     <form action="/" method="GET">
         <div class="form-group row">
-            <label for="id" class="col-sm-1 col-form-label"><input type="checkbox" name="check_id" <% query.check_id ? ' checked' : '' %>> ID</label>
+            <label for="id" class="col-sm-1 col-form-label"><input type="checkbox" name="check_projectid" <%= query.check_prpjectid ? ' checked' : '' %>> ID</label>
             <div class="col-sm-2">
-                <input type="number" class="form-control" id="id" placeholder="ID" name="id">
+                <input type="number" class="form-control" id="id" placeholder="ID" name="projectid" value="<%= query.check_projectid %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="name" class="col-sm-1 col-form-label"><input type="checkbox" name="check_name" <% query.check_name ? ' checked' : '' %>> Name</label>
+            <label for="name" class="col-sm-1 col-form-label"><input type="checkbox" name="check_projectname" <%= query.check_projectname ? ' checked' : '' %>> Name</label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="name" placeholder="Name" name="name">
+                <input type="text" class="form-control" id="name" placeholder="Name" name="projectname" value="<%= query.check_projectname %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="member" class="col-sm-1 col-form-label"><input type="checkbox" name="member">
+            <label for="member" class="col-sm-1 col-form-label"><input type="checkbox" name="check_member" <%= query.check_member ? ' checked' : '' %>>
                 Member</label>
             <div class="col-sm-2">
                 <select id="member" class="form-control" name="member">
                     <option disabled selected>Choose the member...</option>
-                    <% dataMember.forEach((item, i) => { %>
-                    <option value="<%= item %>" <%= query.checkmember ? (query.member == item ? ' selected' : '') : '' %>>
+                    <% dataMembers.forEach((item, i) => { %>
+                    <option value="<%= item %>"
+                        <%= query.check_member ? (query.member == item ? ' selected' : '') : '' %>>
                         <%= fullname[i] %>
                     </option>
                     <% }) %>
@@ -83,18 +84,17 @@
             </tr>
         </tbody>
     </table>
-    <nav aria-label="...">
+    <nav aria-label="Page navigation example">
         <ul class="pagination">
-            <li class="page-item <%= page == 1 ? 'disabled' : ''; %>">
-                <a class="page=link" href="<%= url.replace(`page=${page}`, `page=${parseInt(page) - 1}`) %>"> Previous</a>
+            <li class="page-item<%= pagination.page == 1 ? ' disabled' : '' %>"><a class="page-link"
+                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) - 1}`); %>">Previous</a>
             </li>
-            <% for (let index = 1; index <= pages; i++) { %>
-            <li class="page-item <%= page == i ? 'active' : ''; %>">
-                <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${index}`) %>">1<span class="sr-only">(current)</span></a>
-            </li>
-            <% }; %>
-            <li class="page-item <%= page == pages ? 'disabled' : ''; %>">
-                <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${parseInt(page) + 1}`) %>">Next</a>
+            <% for (let i = 1; i <= pagination.pages; i++) { %>
+            <li class="page-item<%= i == pagination.page ? ' active' : '' %>"><a class="page-link"
+                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${i}`); %>"><%= i %></a></li>
+            <% } %>
+            <li class="page-item<%= pagination.page == pagination.pages ? ' disabled' : '' %>"><a class="page-link"
+                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) + 1}`); %>">Next</a>
             </li>
         </ul>
     </nav>
