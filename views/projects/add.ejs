@@ -6,38 +6,22 @@
     <hr />
     <form action="/" method="post">
         <div class="form-group row">
-            <label for="name" class="col-sm-1 col-form-label">Project Name</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="name" placeholder="Name" name="name">
+            <label for="name" class="col-sm-2 col-form-label">Project Name</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="projectname" placeholder="Project Name" name="projectname">
             </div>
         </div>
         <div class="form-group row">
-            <label for="member" class="col-sm-1 col-form-label">Members</label>
-            <div class="col-sm-2">
+            <label for="member" class="col-sm-2 col-form-label">Members</label>
+            <div class="col-sm-3">
+                <% for (let i = 0; i < fullname.length; i++) { %>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="id" value="id">
-                    <label class="form-check-label" for="id">
-                        ID
+                    <input class="form-check-input" type="checkbox" name="member" id="gridcheck<%= i %>" value="<%= dataMembers[i] %>>">
+                    <label class="form-check-label" for="gridcheck<%= i %>">
+                        <%= fullname[i] %>
                     </label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="id" value="id">
-                    <label class="form-check-label" for="id">
-                        ID
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="id" value="id">
-                    <label class="form-check-label" for="id">
-                        ID
-                    </label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="id" value="id">
-                    <label class="form-check-label" for="id">
-                        ID
-                    </label>
-                </div>
+                <% } %>
             </div>
         </div>
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> save</button>

@@ -6,7 +6,6 @@ const isLoggedIn = (req, res, next) => {
     if (req.session.user) {
         next();
     } else {
-        req.session.latestUrl = req.originalUrl;
         res.redirect('/');
     }
 };
@@ -28,13 +27,16 @@ module.exports = (pool) => {
         let params = [];
         const url = req.url == '/' ? '/?page=1' : req.url;
 
-
         if (req.query.check_projectid && req.query.projectid) {
             params.push(`projectid = ${req.query.projectid}`)
         };
-        if (req.query.check_projectname && req.query.projectname) {
-            params.push(`projectname ILIKE '%${req.query.projectname.toLowerCase()}%'`)
+        console.log(req.query.projectid + req.query.check_projectid);
+
+        if (req.query.check_name && req.query.name) {
+            params.push(`name ILIKE '%${req.query.name.toLowerCase()}%'`)
         };
+        console.log(req.query.name + req.query.check_name);
+
         if (req.query.check_member && req.query.member) {
             params.push(`users.userid IN ('SELECT userid FROM members WHERE projectid IN ('SELECT projectid FROM members WHERE userid = ${member}')')`)
         };
@@ -61,7 +63,7 @@ module.exports = (pool) => {
             if (params.length > 0) {
                 sql += ` WHERE ${params.join(' AND ')}`;
             }
-            
+
             // pagination
             sql += ` GROUP BY projectid ORDER BY projectid LIMIT ${limit} OFFSET ${offset}`;
 
@@ -69,7 +71,7 @@ module.exports = (pool) => {
             let sqlUsers = `SELECT users.userid, CONCAT(users.firstname,' ',users.lastname) fullname FROM users GROUP BY userid`;
 
             pool.query(sql, (err, response) => {
-                if (err){
+                if (err) {
                     return res.send(err)
                 }
                 res.render('projects/list', {
@@ -84,7 +86,7 @@ module.exports = (pool) => {
                 });
                 // console.log('Data Pool ' + sql)
             });
-            
+
             pool.query(sqlUsers, (err, response) => {
                 if (err) {
                     return res.send(err)
@@ -110,11 +112,47 @@ module.exports = (pool) => {
 
     // add                                                                   
     router.get('/add', isLoggedIn, (req, res, next) => {
-        res.render('projects/add', { title: 'Add Project', path: "projects" });
+        let sqlAdd = `SELECT users.userid, STRING_AGG(CONCAT(users.firstname,' ',users.lastname), ', ') fullname FROM users GROUP BY userid`;
+        pool.query(sqlAdd, (err, response) => {
+            if (err) {
+                return res.send(err)
+            }
+            res.render('projects/add', { 
+                title: 'Add Project', 
+                path: 'projects',
+                fullname: response.rows.map(x => x.fullname),
+                moment,
+                dataMembers: response.rows.map(y => y.userid)
+            });
+        });
     });
 
     router.post('/add', isLoggedIn, (req, res, next) => {
-        res.redirect('projects');
+        let sqlAdd = `INSERT INTO projects(name) VALUES ('${req.body.projectname}')`
+        pool.query(sqlAdd, (err) => {
+            let sqlMember = `SELECT MAX(projectid) total FROM projects`;
+            pool.query(sqlMember, (err, response) => {
+                if (err) {
+                    return res.send(err)
+                }
+                let params = [];
+                const projectId = response.rows[0].total;
+                if (typeof req.body.member == 'string') {
+                    params.push(`(${req.body.member}, ${projectId})`);
+                } else {
+                    for (let i = 0; i < req.body.member.length; i++) {
+                        params.push(`(${req.body.member[i]}, ${projectId})`); 
+                    }
+                }
+                let sqlAddPost = `INSERT INTO members (userid, projectid) VALUES ${params.join(', ')}`;
+                pool.query(sqlAddPost, (err) => {
+                    if (err) {
+                        res.send(err);
+                    }
+                    res.redirect('projects');
+                });
+            });
+        });
     });
 
     // edit
