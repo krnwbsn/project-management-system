@@ -4,7 +4,7 @@
 <div class="container-fluid" style="margin-top: 20px">
     <h1>Add Projects</h1>
     <hr />
-    <form action="/" method="post">
+    <form action="" method="post">
         <div class="form-group row">
             <label for="name" class="col-sm-2 col-form-label">Project Name</label>
             <div class="col-sm-3">
@@ -16,8 +16,8 @@
             <div class="col-sm-3">
                 <% for (let i = 0; i < fullname.length; i++) { %>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="member" id="gridcheck<%= i %>" value="<%= dataMembers[i] %>>">
-                    <label class="form-check-label" for="gridcheck<%= i %>">
+                    <input class="form-check-input" type="checkbox" name="member" id="check<%= i %>" value="<%= dataMembers[i] %>">
+                    <label class="form-check-label" for="check<%= i %>">
                         <%= fullname[i] %>
                     </label>
                 </div>

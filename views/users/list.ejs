@@ -6,43 +6,69 @@
     <h3><i class="fas fa-filter"></i> Filters</h3>
     <form action="/" method="post">
         <div class="form-group row">
-            <label for="id" class="col-sm-1 col-form-label"><input type="checkbox" name="check_id"> ID</label>
-            <div class="col-sm-2">
-                <input type="number" class="form-control" id="id" placeholder="ID" name="id">
+            <label for="userid" class="col-sm-2 col-form-label"><input type="checkbox" name="check_userid"> User ID</label>
+            <div class="col-sm-3">
+                <input type="number" class="form-control" id="userid" placeholder="ID" name="userid">
             </div>
         </div>
         <div class="form-group row">
-            <label for="name" class="col-sm-1 col-form-label"><input type="checkbox" name="check_name"> Name</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="name" placeholder="name" name="name">
+            <label for="fullname" class="col-sm-2 col-form-label"><input type="checkbox" name="check_fullname"> Name</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="fullname" placeholder="fullname" name="fullname">
             </div>
         </div>
         <div class="form-group row">
-            <label for="email" class="col-sm-1 col-form-label"><input type="checkbox" name="check_email"> Email</label>
-            <div class="col-sm-2">
+            <label for="email" class="col-sm-2 col-form-label"><input type="checkbox" name="check_email"> Email</label>
+            <div class="col-sm-3">
                 <input type="text" class="form-control" id="email" placeholder="email" name="email">
             </div>
         </div>
         <div class="form-group row">
-            <label for="role" class="col-sm-1 col-form-label"><input type="checkbox" name="check_role"> Role</label>
-            <div class="col-sm-2">
+            <label for="role" class="col-sm-2 col-form-label"><input type="checkbox" name="check_role"> Role</label>
+            <div class="col-sm-3">
                 <select id="role" class="form-control" name="role">
                     <option disabled selected>Choose the role...</option>
-                    <option value="manager">Manager</option>
-                    <option value="softwareDeveloper">Software Developer</option>
-                    <option value="qualityassurance">Quality Assurance</option>
+                    <option value="Manager" <%= query.check_role == "Manager" ? ' selected' : ''; %>>Manager</option>
+                    <option value="Software Developer" <%= query.check_role == "Software Developer" ? ' selected' : ''; %>>Software Developer</option>
+                    <option value="Quality Assurance" <%= query.check_role == "Quality Assurance" ? ' selected' : ''; %>>Quality Assurance</option>
                 </select>
             </div>
         </div>
+        <fieldset class="form-group">
+            <div class="row">
+                <legend class="col-form-label col-sm-2 pt-0"><input type="checkbox" name="check_typejob" <%= query.check_typejob ? ' checked' : '' %>> Type Job</legend>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobfulltime" value="Full Time" <%= query.check_typejob == 'Full Time' ? ' checked' : '' %>>
+                        <label class="form-check-label" for="typejobfulltime">
+                            Full Time
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobparttime" value="Part Time" <%= query.check_typejob == 'Part Time' ? ' checked' : '' %>>
+                        <label class="form-check-label" for="typejobparttime">
+                            Part Time
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <!-- <div class="form-group row">
+            <label for="typejob" class="col-sm-2 col-form-label"><input type="checkbox" name="check_typejob" <%= query.check_typejob ? ' checked' : '' %>> Type Job</label>
+            <div class="col-sm-3">
+                <input class="form-control" type="radio" name="typejob" id="typejob" value="Full Time"
+                    <%= query.check_typejob == "Full Time" ? ' selected' : ''; %>/> Full Time
+            </div>
+        </div> -->
         <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
-        <button class="btn btn-outline-warning" href="/projects"><i class="fas fa-sync-alt"></i> Reset</button>
+        <a href="/users"><button class="btn btn-outline-warning"><i class="fas fa-sync-alt"></i> Reset</button></a>
     </form>
     <hr />
     <h3><i class="fas fa-columns"></i> Options</h3>
     <form>
         <div class="form-group row">
-            <div class="col-sm-1">Column</div>
-            <div class="col-sm-2">
+            <div class="col-sm-2">Column</div>
+            <div class="col-sm-3">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="id" value="id">
                     <label class="form-check-label" for="id">
@@ -67,6 +93,12 @@
                         Role
                     </label>
                 </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="typejob" value="typejob">
+                    <label class="form-check-label" for="typejob">
+                        Type Job
+                    </label>
+                </div>
             </div>
         </div>
         <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Apply</button>
@@ -78,43 +110,25 @@
                 <th scope="col">Name</th>
                 <th scope="col">Email</th>
                 <th scope="col">Role</th>
+                <th scope="col">Type Job</th>
                 <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
+            <% data.forEach((item) => { %>
             <tr>
-                <td>1</td>
-                <td>Krina Wibisana</td>
-                <td>krina@rubicamp.com</td>
-                <td>Manager</td>
-                <td><a href="users/edit/:id"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
+                <td><%= item.userid %></td>
+                <td><%= item.fullname %></td>
+                <td><%= item.email %></td>
+                <td> </td>
+                <td><%= item.typejob %></td>
+                <td><a href="users/edit/:userid"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
                             Edit</button></a>
-                    <a href="users/delete/:id"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
+                    <a href="users/delete/:userid"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
                             Delete</button></a>
                 </td>
             </tr>
-            <tr>
-                <td>2</td>
-                <td>Krina Wibisana</td>
-                <td>krina@rubicamp.com</td>
-                <td>Manager</td>
-                <td><a href="users/edit/:id"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
-                            Edit</button></a>
-                    <a href="users/delete/:id"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
-                            Delete</button></a>
-                </td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Krina Wibisana</td>
-                <td>krina@rubicamp.com</td>
-                <td>Manager</td>
-                <td><a href="users/edit/:id"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
-                            Edit</button></a>
-                    <a href="users/delete/:id"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
-                            Delete</button></a>
-                </td>
-            </tr>
+            <% }) %>
         </tbody>
     </table>
     <nav aria-label="...">

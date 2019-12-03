@@ -5,48 +5,48 @@
     <hr />
     <form action="/" method="post">
         <div class="form-group row">
-            <label for="firstName" class="col-sm-1 col-form-label">First Name</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName">
+            <label for="firstname" class="col-sm-2 col-form-label">First Name</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="firstname" placeholder="First Name" name="firstname" value="<%= item.firstname %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="lastName" class="col-sm-1 col-form-label">Last Name</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName">
+            <label for="lastname" class="col-sm-2 col-form-label">Last Name</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="lastname" placeholder="Last Name" name="lastname" value="<%= item.lastname %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="emailAddress" class="col-sm-1 col-form-label">Email Address</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="emailAddress" placeholder="Email Address"
-                    name="emailAddress" required autofocus>
+            <label for="email" class="col-sm-2 col-form-label">Email Address</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="email" placeholder="Email Address" value="<%= item.email %>"
+                    name="email" required autofocus>
             </div>
         </div>
         <div class="form-group row">
-            <label for="accountPassword" class="col-sm-1 col-form-label">Password</label>
+            <label for="password" class="col-sm-2 col-form-label">Password</label>
             <div class="col-sm-2">
-                <input type="text" class="form-control" id="accountPassword" placeholder="Password"
-                    name="accountPassword" required autofocus>
+                <input type="text" class="form-control" id="password" placeholder="password" value="<%= item.password %>"
+                    name="password" required autofocus>
             </div>
         </div>
         <div class="form-group row">
-            <label for="member" class="col-sm-1 col-form-label">Position</label>
-            <div class="col-sm-2">
+            <label for="role" class="col-sm-2 col-form-label">Role</label>
+            <div class="col-sm-3">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="position" value="manager">
+                    <input class="form-check-input" type="radio" name="role" value="manager">
                     <label class="form-check-label" for="manager">
                         Manager
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="position" value="softwareDeveloper">
+                    <input class="form-check-input" type="radio" name="role" value="softwareDeveloper">
                     <label class="form-check-label" for="softwareDeveloper">
                         Software Developer
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="position" value="qualityAssurance">
+                    <input class="form-check-input" type="radio" name="role" value="qualityAssurance">
                     <label class="form-check-label" for="qualityAssurance">
                         Quality Assurance
                     </label>
@@ -54,7 +54,7 @@
             </div>
         </div>
         <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Update</button>
-        <a href="users.html"><button type="button" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
+        <a href="/users"><button type="button" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
                 Cancel</button></a>
     </form>
 </div>

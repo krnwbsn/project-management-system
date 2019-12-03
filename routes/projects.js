@@ -30,12 +30,12 @@ module.exports = (pool) => {
         if (req.query.check_projectid && req.query.projectid) {
             params.push(`projectid = ${req.query.projectid}`)
         };
-        console.log(req.query.projectid + req.query.check_projectid);
+        // console.log(req.query.projectid + req.query.check_projectid);
 
         if (req.query.check_name && req.query.name) {
             params.push(`name ILIKE '%${req.query.name.toLowerCase()}%'`)
         };
-        console.log(req.query.name + req.query.check_name);
+        // console.log(req.query.name + req.query.check_name);
 
         if (req.query.check_member && req.query.member) {
             params.push(`users.userid IN ('SELECT userid FROM members WHERE projectid IN ('SELECT projectid FROM members WHERE userid = ${member}')')`)
@@ -66,42 +66,59 @@ module.exports = (pool) => {
 
             // pagination
             sql += ` GROUP BY projectid ORDER BY projectid LIMIT ${limit} OFFSET ${offset}`;
-
+            
             // filter member
             let sqlUsers = `SELECT users.userid, CONCAT(users.firstname,' ',users.lastname) fullname FROM users GROUP BY userid`;
 
-            pool.query(sql, (err, response) => {
-                if (err) {
-                    return res.send(err)
-                }
-                res.render('projects/list', {
-                    title: 'Projects',
-                    path: 'projects',
-                    data: response.rows,
-                    query: req.query,
-                    pagination: { pages, page, url },
-                    fullname: response.rows.map(x => x.fullname),
-                    moment,
-                    dataMembers: response.rows.map(y => y.userid)
-                });
-                // console.log('Data Pool ' + sql)
-            });
+            // pool.query(sql, (err, response) => {
+            //     if (err) {
+            //         return res.send(err)
+            //     }
+            //     res.render('projects/list', {
+            //         title: 'Projects',
+            //         path: 'projects',
+            //         data: response.rows,
+            //         query: req.query,
+            //         pagination: { pages, page, url },
+            //         fullname: response.rows.map(x => x.fullname),
+            //         moment,
+            //         dataMembers: response.rows.map(y => y.userid)
+            //     });
+            //     // console.log('Data Pool ' + sql)
+            // });
 
-            pool.query(sqlUsers, (err, response) => {
-                if (err) {
-                    return res.send(err)
-                }
+            // pool.query(sqlUsers, (err, response) => {
+            //     if (err) {
+            //         return res.send(err)
+            //     }
+            //     res.render('projects/list', {
+            //         title: 'Projects',
+            //         path: 'projects',
+            //         data: response.rows,
+            //         query: req.query,
+            //         pagination: { pages, page, url },
+            //         fullname: response.rows.map(x => x.fullname),
+            //         moment,
+            //         dataMembers: response.rows.map(y => y.userid)
+            //     });
+            //     // console.log('Users Pool ' + sqlUsers)
+            // });
+
+            Promise.all([pool.query(sql), pool.query(sqlUsers)])
+            .then(results => {
                 res.render('projects/list', {
                     title: 'Projects',
                     path: 'projects',
-                    data: response.rows,
+                    data: results.rows,
                     query: req.query,
                     pagination: { pages, page, url },
-                    fullname: response.rows.map(x => x.fullname),
+                    fullname: results.rows.map(x => x.fullname),
                     moment,
-                    dataMembers: response.rows.map(y => y.userid)
+                    dataMembers: results.rows.map(y => y.userid)
                 });
-                // console.log('Users Pool ' + sqlUsers)
+            })
+            .catch(err => {
+                res.send(err)
             });
         });
     });
@@ -128,13 +145,12 @@ module.exports = (pool) => {
     });
 
     router.post('/add', isLoggedIn, (req, res, next) => {
-        let sqlAdd = `INSERT INTO projects(name) VALUES ('${req.body.projectname}')`
-        pool.query(sqlAdd, (err) => {
+        let sqlAdd = `INSERT INTO projects(name) VALUES($1)`;
+        let insertSqlAdd = [req.body.projectname]
+        console.log(sqlAdd);
+        pool.query(sqlAdd, insertSqlAdd, (err) => {
             let sqlMember = `SELECT MAX(projectid) total FROM projects`;
             pool.query(sqlMember, (err, response) => {
-                if (err) {
-                    return res.send(err)
-                }
                 let params = [];
                 const projectId = response.rows[0].total;
                 if (typeof req.body.member == 'string') {
@@ -144,12 +160,13 @@ module.exports = (pool) => {
                         params.push(`(${req.body.member[i]}, ${projectId})`); 
                     }
                 }
-                let sqlAddPost = `INSERT INTO members (userid, projectid) VALUES ${params.join(', ')}`;
+                let sqlAddPost = `INSERT INTO members(userid, projectid) VALUES ${params.join(', ')}`;
+                console.log(sqlAddPost)
                 pool.query(sqlAddPost, (err) => {
                     if (err) {
                         res.send(err);
                     }
-                    res.redirect('projects');
+                    res.redirect('/projects');
                 });
             });
         });
@@ -157,7 +174,37 @@ module.exports = (pool) => {
 
     // edit
     router.get('/edit/:id', isLoggedIn, (req, res, next) => {
-        res.render('projects/edit', { title: 'Edit Project', path: "projects" });
+        let sqlEdit = `SELECT users.userid, CONCAT(users.firstname,' ', users.lastname) AS fullname FROM users ORDER BY userid`;
+        pool.query(sqlEdit, (err, response) => {
+            const userData = response.rows;
+            let projectId = req.params.id;
+            let sqlEditGet = `SELECT members.projectid, MAX(projects.name) projectname, ARRAY_AGG(userid) member, 
+            STRING_AGG(CONCAT(users.firstname, ' ', users.lastname), ', ') fullname 
+            FROM members INNER JOIN projects USING (projectid) INNER JOIN users USING (userid) 
+            WHERE projectid=${projectId} GROUP BY projectid ORDER BY projectid`;
+            pool.query(sqlEditGet, (err, response) => {
+                res.render('projects/edit', {
+                    title: 'Edit Project',
+                    path: 'projects',
+                    userData,
+                    fullname: response.rows.map(x => x.fullname),
+                    data: response.rows,
+                    dataMembers: response.rows.map(y => y.member),
+                    item: response.rows[0]
+                });
+                console.log(sqlEditGet)
+            });
+            if (err) throw err;
+            res.render('projects/edit', { 
+                title: 'Edit Project', 
+                path: 'projects',
+                userData,
+                fullname: response.rows.map(x => x.fullname),
+                data: response.rows,
+                dataMembers: response.rows.map(y => y.member),
+                item: response.rows[0]
+            });
+        });
     });
 
     router.post('/edit/:id', isLoggedIn, (req, res, next) => {

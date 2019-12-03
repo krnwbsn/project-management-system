@@ -1,47 +1,33 @@
 <% include ../partials/header %>
 <% include ../partials/menu %>
-    <div class="container-fluid" style="margin-top: 20px">
-        <h1>Edit Projects</h1>
-        <hr />
-        <form action="/" method="post">
-            <div class="form-group row">
-                <label for="name" class="col-sm-1 col-form-label">Project Name</label>
-                <div class="col-sm-2">
-                    <input type="text" class="form-control" id="name" placeholder="Name" name="name">
-                </div>
+<div class="container-fluid" style="margin-top: 20px">
+    <h1>Edit Projects</h1>
+    <hr />
+    <form action="" method="post">
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Project Name</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="projectname" placeholder="Project Name" name="projectname" value="<%= item.projectname %>" readonly>
             </div>
-            <div class="form-group row">
-                <label for="member" class="col-sm-1 col-form-label">Members</label>
-                <div class="col-sm-2">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="id" value="id">
-                        <label class="form-check-label" for="id">
-                            ID
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="id" value="id">
-                        <label class="form-check-label" for="id">
-                            ID
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="id" value="id">
-                        <label class="form-check-label" for="id">
-                            ID
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="id" value="id">
-                        <label class="form-check-label" for="id">
-                            ID
-                        </label>
-                    </div>
+        </div>
+        <div class="form-group row">
+            <label for="member" class="col-sm-2 col-form-label">Members</label>
+            <div class="col-sm-3">
+                <% for (let i = 0; i < userData.length; i++) { %>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="member" id="check<%= i %>"
+                        value="<%= userData[i].userid %>"
+                        <%= userData[i].userid ? ' checked' : '' %>/>
+                    <label class="form-check-label" for="check<%= i %>">
+                        <%= userData[i].fullname %>
+                    </label>
                 </div>
+                <% } %>
             </div>
-            <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Update</button>
-            <a href="projects.html"><button type="submit" class="btn btn-outline-warning"><i
-                        class="fas fa-redo-alt"></i> Cancel</button></a>
-        </form>
-    </div>
+        </div>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Update</button>
+        <a href="projects.html"><button type="submit" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
+                Cancel</button></a>
+    </form>
+</div>
 <% include ../partials/footer %>
