@@ -31,8 +31,8 @@
                     <option disabled selected>Choose the member...</option>
                     <% dataMembers.forEach((item, i) => { %>
                     <option value="<%= item %>"
-                        <%= query.check_member ? (query.member == item ? ' selected' : '') : '' %>>
-                        <%= fullname[i] %>
+                        <%= query.member == item ? ' selected' : '' %>>
+                        <%= item.fullname %>
                     </option>
                     <% }) %>
                 </select>

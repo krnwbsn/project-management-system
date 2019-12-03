@@ -14,14 +14,14 @@
         <div class="form-group row">
             <label for="member" class="col-sm-2 col-form-label">Members</label>
             <div class="col-sm-3">
-                <% for (let i = 0; i < fullname.length; i++) { %>
+                <% dataMembers.forEach((item, i) => { %>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="member" id="check<%= i %>" value="<%= dataMembers[i] %>">
+                    <input class="form-check-input" type="checkbox" name="member" id="check" value="<%= item %>">
                     <label class="form-check-label" for="check<%= i %>">
-                        <%= fullname[i] %>
+                        <%= item.fullname %>
                     </label>
                 </div>
-                <% } %>
+                <% }) %>
             </div>
         </div>
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> save</button>

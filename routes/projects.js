@@ -40,7 +40,6 @@ module.exports = (pool) => {
         if (req.query.check_member && req.query.member) {
             params.push(`users.userid IN ('SELECT userid FROM members WHERE projectid IN ('SELECT projectid FROM members WHERE userid = ${member}')')`)
         };
-
         // console.log('Query ' + req.query)
 
         // sql for Filter
@@ -70,55 +69,26 @@ module.exports = (pool) => {
             // filter member
             let sqlUsers = `SELECT users.userid, CONCAT(users.firstname,' ',users.lastname) fullname FROM users GROUP BY userid`;
 
-            // pool.query(sql, (err, response) => {
-            //     if (err) {
-            //         return res.send(err)
-            //     }
-            //     res.render('projects/list', {
-            //         title: 'Projects',
-            //         path: 'projects',
-            //         data: response.rows,
-            //         query: req.query,
-            //         pagination: { pages, page, url },
-            //         fullname: response.rows.map(x => x.fullname),
-            //         moment,
-            //         dataMembers: response.rows.map(y => y.userid)
-            //     });
-            //     // console.log('Data Pool ' + sql)
-            // });
-
-            // pool.query(sqlUsers, (err, response) => {
-            //     if (err) {
-            //         return res.send(err)
-            //     }
-            //     res.render('projects/list', {
-            //         title: 'Projects',
-            //         path: 'projects',
-            //         data: response.rows,
-            //         query: req.query,
-            //         pagination: { pages, page, url },
-            //         fullname: response.rows.map(x => x.fullname),
-            //         moment,
-            //         dataMembers: response.rows.map(y => y.userid)
-            //     });
-            //     // console.log('Users Pool ' + sqlUsers)
-            // });
-
-            Promise.all([pool.query(sql), pool.query(sqlUsers)])
-            .then(results => {
-                res.render('projects/list', {
-                    title: 'Projects',
-                    path: 'projects',
-                    data: results.rows,
-                    query: req.query,
-                    pagination: { pages, page, url },
-                    fullname: results.rows.map(x => x.fullname),
-                    moment,
-                    dataMembers: results.rows.map(y => y.userid)
-                });
-            })
-            .catch(err => {
-                res.send(err)
+            pool.query(sql, (err, response) => {
+                if (err) {
+                    return res.send(err)
+                }
+                console.log(response)
+                pool.query(sqlUsers, (err, result) => {
+                    if (err) {
+                        return res.send(err)
+                    }
+                    console.log(result)
+                    res.render('projects/list', {
+                        title: 'Projects',
+                        path: 'projects',
+                        data: response.rows,
+                        query: req.query,
+                        pagination: { pages, page, url },
+                        moment,
+                        dataMembers: result.rows
+                    });
+                })
             });
         });
     });
@@ -130,16 +100,15 @@ module.exports = (pool) => {
     // add                                                                   
     router.get('/add', isLoggedIn, (req, res, next) => {
         let sqlAdd = `SELECT users.userid, STRING_AGG(CONCAT(users.firstname,' ',users.lastname), ', ') fullname FROM users GROUP BY userid`;
-        pool.query(sqlAdd, (err, response) => {
+        pool.query(sqlAdd, (err, result) => {
             if (err) {
                 return res.send(err)
             }
             res.render('projects/add', { 
                 title: 'Add Project', 
                 path: 'projects',
-                fullname: response.rows.map(x => x.fullname),
                 moment,
-                dataMembers: response.rows.map(y => y.userid)
+                dataMembers: result.rows
             });
         });
     });
