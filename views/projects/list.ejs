@@ -5,34 +5,33 @@
     <h1>Projects</h1>
     <hr />
     <h3><i class="fas fa-filter"></i> Filters</h3>
-    <form action="/" method="post">
+    <form action="/projects" method="GET">
         <div class="form-group row">
-            <label for="id" class="col-sm-2 col-form-label"><input type="checkbox" name="check_projectid"
-                    <%= query.check_projectid ? ' checked' : ''; %> /> ID</label>
+            <label for="id" class="col-sm-2 col-form-label"><input type="checkbox" name="checkprojectid"
+                    <%= query.checkprojectid ? ' checked' : ''; %> /> ID</label>
             <div class="col-sm-3">
                 <input type="number" class="form-control" id="projectid" placeholder="Project ID" name="projectid"
                     value="<%= query.projectid %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="name" class="col-sm-2 col-form-label"><input type="checkbox" name="check_projectname"
-                    <%= query.check_projectname ? ' checked' : ''; %> /> Project Name</label>
+            <label for="name" class="col-sm-2 col-form-label"><input type="checkbox" name="checkname"
+                    <%= query.checkname ? ' checked' : ''; %> /> Project Name</label>
             <div class="col-sm-3">
-                <input type="text" class="form-control" id="projectname" placeholder="Project Name" name="projectname"
-                    value="<%= query.projectname %>">
+                <input type="text" class="form-control" id="name" placeholder="Project Name" name="name"
+                    value="<%= query.name %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="member" class="col-sm-2 col-form-label"><input type="checkbox" name="check_member"
-                    <%= query.check_member ? ' checked' : ''; %> />
+            <label for="member" class="col-sm-2 col-form-label"><input type="checkbox" name="checkmember"
+                    <%= query.checkmember ? ' checked' : ''; %> />
                 Member</label>
             <div class="col-sm-3">
                 <select id="member" class="form-control" name="member">
                     <option disabled selected>Choose the member...</option>
-                    <% dataMembers.forEach((item, i) => { %>
-                    <option value="<%= item %>"
-                        <%= query.member == item ? ' selected' : '' %>>
-                        <%= item.fullname %>
+                    <% users.forEach(item => { %>
+                    <option value="<%= item.userid %>">
+                        <%= item.firstname + ' ' + item.lastname %>
                     </option>
                     <% }) %>
                 </select>
@@ -83,13 +82,13 @@
             <tr>
                 <td><a href="projects/overview/<%= item.projectid %>"><button type="button"
                             class="btn btn-outline-dark"><%= item.projectid %></button></a></td>
-                <td><%= item.projectname %></td>
-                <td><%= item.fullname %></td>
+                <td><%= item.name %></td>
+                <td><%= item.members %></td>
                 <td>
                     <a href="projects/edit/<%= item.projectid %>"><button type="button"
                             class="btn btn-outline-success"><i class="fas fa-edit"></i>
                             Edit</button></a>
-                    <a href="delete/<%= item.projectid %>"><button type="button" class="btn btn-outline-danger"><i
+                    <a href="projects/delete/<%= item.projectid %>"><button type="button" class="btn btn-outline-danger"><i
                                 class="fas fa-trash"></i>
                             Delete</button></a>
                 </td>
@@ -100,15 +99,15 @@
     <nav aria-label="Page navigation example">
         <ul class="pagination">
             <li class="page-item<%= pagination.page == 1 ? ' disabled' : '' %>"><a class="page-link"
-                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) - 1}`); %>">Previous</a>
+                    href="/projects<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) - 1}`); %>">Previous</a>
             </li>
             <% for (var i = 1; i <= pagination.pages; i++) { %>
             <li class="page-item<%= i == pagination.page ? ' active' : '' %>"><a class="page-link"
-                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${i}`); %>"><%= i %></a>
+                    href="/projects<%= pagination.url.replace(`page=${pagination.page}`, `page=${i}`); %>"><%= i %></a>
             </li>
             <% } %>
             <li class="page-item<%= pagination.page == pagination.pages ? ' disabled' : '' %>"><a class="page-link"
-                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) + 1}`); %>">Next</a>
+                    href="/projects<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) + 1}`); %>">Next</a>
             </li>
         </ul>
     </nav>

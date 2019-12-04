@@ -16,10 +16,10 @@
                 <% for (let i = 0; i < userData.length; i++) { %>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="member" id="check<%= i %>"
-                        value="<%= userData[i].userid %>"
-                        <%= userData[i].userid ? ' checked' : '' %>/>
+                        value="<%= userdata[i].userid %>"
+                        <%= userdata[i].userid ? ' checked' : '' %>/>
                     <label class="form-check-label" for="check<%= i %>">
-                        <%= userData[i].fullname %>
+                        <%= userdata[i].fullname %>
                     </label>
                 </div>
                 <% } %>

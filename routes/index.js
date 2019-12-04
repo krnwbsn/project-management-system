@@ -12,7 +12,7 @@ const isLoggedIn = (req, res, next) => {
 };
 const isLoggedOut = (req, res, next) => {
   if (req.session.user) {
-    res.redirect('/index');
+    res.redirect('/login');
   } else {
     next();
   }
@@ -28,9 +28,9 @@ router.use(bodyParser.urlencoded({ extended: false }))
 router.use(bodyParser.json())
 
 module.exports = (pool) => {
-  // log in session
+  
   router.get('/', function (req, res, next) {
-    res.render('index', { info: req.flash('info') });
+    res.render('login', { info: req.flash('info') });
   });
 
   router.post('/login', function (req, res, next) {
@@ -40,18 +40,19 @@ module.exports = (pool) => {
     pool.query(sql, (err, row) => {
       // console.log(isPassword)
       // bcrypt.compare(password, isPassword, (err, valid) => {
-      if (row.rows[0] == undefined) {
-        req.flash('info', 'Username or Password is wrong')
-        res.redirect('/');
-      } else if (email == row.rows[0].email && password == row.rows[0].password) {
-        req.session.user = email;
-        res.redirect('/projects');
+      if (row.rows.length > 0) {
+        if (email == row.rows[0].email && password == row.rows[0].password) {
+          row.rows[0].password = null;
+          req.session.user = row.rows[0];
+          res.redirect('/projects');
+        } else {
+          req.flash('info', 'Password is wrong');
+          res.redirect('/');
+        }
       } else {
-        req.flash('info', 'Username or Password is wrong');
+        req.flash('info', 'Email is wrong')
         res.redirect('/');
       }
-      // res.render('index', { title: 'Login' })
-      // })
     })
   })
 
