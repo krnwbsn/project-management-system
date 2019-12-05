@@ -7,26 +7,25 @@
         <div class="form-group row">
             <label for="name" class="col-sm-2 col-form-label">Project Name</label>
             <div class="col-sm-3">
-                <input type="text" class="form-control" id="projectname" placeholder="Project Name" name="projectname" value="<%= item.projectname %>" readonly>
+                <input type="text" class="form-control" id="name" placeholder="Project Name" name="name" value="<%= name %>" readonly>
             </div>
         </div>
         <div class="form-group row">
             <label for="member" class="col-sm-2 col-form-label">Members</label>
             <div class="col-sm-3">
-                <% for (let i = 0; i < userData.length; i++) { %>
+                <% users.forEach(item => { %>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="member" id="check<%= i %>"
-                        value="<%= userdata[i].userid %>"
-                        <%= userdata[i].userid ? ' checked' : '' %>/>
-                    <label class="form-check-label" for="check<%= i %>">
-                        <%= userdata[i].fullname %>
+                    <input class="form-check-input" type="checkbox" name="members" id="<%= item.userid %>"
+                        value="<%= item.userid %>" <%= members.includes(item.userid) ? ' checked' : '' %>/>
+                    <label class="form-check-label" for="check">
+                        <%= item.firstname + ' ' + item.lastname %>
                     </label>
                 </div>
-                <% } %>
+                <% }) %>
             </div>
         </div>
         <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Update</button>
-        <a href="projects.html"><button type="submit" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
+        <a href="/projects"><button type="submit" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
                 Cancel</button></a>
     </form>
 </div>

@@ -1,54 +1,41 @@
 var express = require('express');
 var router = express.Router();
-const bodyParser = require('body-parser');
 const path = require('path');
-const isLoggedIn = (req, res, next) => {
-  if (req.session.user) {
-    next();
-  } else {
-    res.redirect('/');
-  }
-};
+const helpers = require('../helpers/util');
 const moment = require('moment');
 moment().format();
 
-// parse application/x-www-form-urlencoded
-router.use(bodyParser.urlencoded({ extended: false }))
-
-// parse application/json
-router.use(bodyParser.json())
-
 module.exports = (pool) => {
-  /* GET home page. */
-  router.get('/', isLoggedIn, (req, res, next) => {
+
+  router.get('/', helpers.isLoggedIn, (req, res, next) => {
     let params = [];
     const url = req.url == '/' ? '/?page=1' : req.url;
     const page = req.query.page || 1;
     const limit = 3;
     const offset = (page - 1) * limit;
 
-    if (req.query.check_userid && req.query.userid){
-      params.push(`id = ${req.query.userid}`)
+    if (req.query.checkuserid && req.query.userid){
+      params.push(`users.userid = ${req.query.userid}`)
     }
-    if (req.query.check_fullname && req.query.firstname && req.query.lastname){
-      params.push(`fullname ILIKE '%${req.query.firstname}%' OR '%${req.query.lastname}%'`)
+    if (req.query.checkfullname && req.query.fullname){
+      params.push(`CONCAT (users.firstname,' ',users.lastname) ILIKE '%${req.query.fullname}%'`)
     }
-    if (req.query.check_email && req.query.email){
-      params.push(`email = ${req.query.email}`)
+    if (req.query.checkemail && req.query.email){
+      params.push(`users.email = '${req.query.email}'`)
     }
-    if (req.query.check_role && req.query.role){
-      params.push(`role = ${req.query.role}`)
+    if (req.query.checkrole && req.query.role){
+      params.push(`members.role = '${req.query.role}'`)
     }
-    if (req.query.check_typejob && req.query.typejob){
-      params.push(`typejob = ${req.query.typejob}`)
+    if (req.query.checktypejob && req.query.typejob){
+      params.push(`users.typejob = '${req.query.typejob}'`)
     }
 
-    let sql = `SELECT COUNT(*) AS total FROM users`;
+    let sql = `SELECT COUNT(id) AS total FROM users LEFT JOIN members ON users.userid = members.userid`;
 
     if (params.length > 0){
       sql += ` WHERE ${params.join(' AND ')}`
     }
-
+    console.log
     pool.query(sql, (err, response) => {
       if (err){
         return res.send(err)
@@ -56,7 +43,7 @@ module.exports = (pool) => {
       const total = response.rows[0].total;
       const pages = Math.ceil(total / limit);
 
-      sql = `SELECT *, CONCAT(firstname,' ',lastname) AS fullname FROM users`
+      sql = `SELECT DISTINCT users.userid, users.email, users.password, users.typejob, members.role, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM users LEFT JOIN members ON users.userid = members.userid`
 
       if (params.length > 0){
         sql += ` WHERE ${params.join(' AND ')}`
@@ -80,12 +67,11 @@ module.exports = (pool) => {
     })
   });
 
-  router.post('/', isLoggedIn, (req, res, next) => {
-    res.redirect('users/list');
+  router.post('/', helpers.isLoggedIn, (req, res, next) => {
+    res.redirect('/users');
   });
 
-  // edit user
-  router.get('/edit/:userid', isLoggedIn, (req, res, next) => {
+  router.get('/edit/:userid', helpers.isLoggedIn, (req, res, next) => {
     let id = parseInt(req.params.id);
     let sqlEdit = `SELECT * FROM users WHERE userid = ${id}`;
     pool.query(sqlEdit, (err, response) => {
@@ -99,7 +85,7 @@ module.exports = (pool) => {
     });
   });
 
-  router.post('/edit/:userid', isLoggedIn, (req, res, next) => {
+  router.post('/edit/:userid', helpers.isLoggedIn, (req, res, next) => {
     let userid = req.params.userid;
     let sqlEdit = `UPDATE users SET firstname=$1, lastname=$2, email=$3, password=$4 WHERE userid=$5`;
     let insert = [req.body.firstname, req.body.lastname, req.body.email, req.body.password, userid];
@@ -111,13 +97,54 @@ module.exports = (pool) => {
     })
   });
 
-  // add
-  router.get('/add', isLoggedIn, (req, res, next) => {
-    res.render('users/add', { title: 'Users', path: "users" });
+  router.get('/add', helpers.isLoggedIn, (req, res, next) => {
+    let sqlAdd = `SELECT DISTINCT users.userid, users.email, users.password, users.typejob, members.role, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM users LEFT JOIN members ON users.userid = members.userid`
+    pool.query(sqlAdd, (err, result) => {
+      if (err) throw err;
+      res.render('users/add', {
+        title: 'Add Users',
+        path: 'users',
+        data: result.rows,
+        user: req.session.user
+      });
+    });
   });
 
-  router.post('/add', isLoggedIn, (res, req, next) => {
-    res.redirect('users');
+  router.post('/add', helpers.isLoggedIn, (res, req, next) => {
+    let sqlAdd = `INSERT INTO users(firstname, lastname, email, password, typejob) VALUES ($1,$2,$3,$4,$5)`;
+    let add = [req.body.firstname, req.body.lastname, req.body.email, req.body.password, req.body.typejob];
+    console.log('sqlAdd ' + sqlAdd)
+    pool.query(sqlAdd, add, (err, result) => {
+      let sqlAddNext = `SELECT MAX(userid) total FROM users`;
+      console.log('sqlAddNext ' + sqlAddNext)
+      pool.query(sqlAddNext, (err, result) => {
+        if (err) throw err;
+        let params = [];
+        const uid = result.rows[0].total;
+        if (typeof req.body.role == 'string') {
+          params.push(`(${req.body.role}, ${uid})`);
+        } 
+        let sqlAddUsers = `INSERT INTO members(role, userid) VALUES ${params.join(', ')}`;
+        console.log('sqlAddUsers ' + sqlAddUsers)
+        pool.query(sqlAddUser, (err) => {
+          if (err) throw err;
+          res.redirect('/users')
+        });
+      });
+    });
+  });
+
+  router.get('/delete/:id', helpers.isLoggedIn, (req, res, next) => {
+    let sqlDelete = `DELETE FROM users WHERE userid = ${req.params.id}`;
+    console.log('Delete User ' + sqlDelete)
+    pool.query(sqlDelete, (err, response) => {
+      if (err) throw err;
+      let sqlDeleteNext = `DELETE FROM members WHERE userid = ${req.params.id}`;
+      pool.query(sqlDeleteNext, (err, response) => {
+        if (err) throw err;
+        res.redirect('/users')
+      });
+    });
   });
 
   return router;

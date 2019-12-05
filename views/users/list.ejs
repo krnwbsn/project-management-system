@@ -4,48 +4,48 @@
     <h1>Users</h1>
     <hr />
     <h3><i class="fas fa-filter"></i> Filters</h3>
-    <form action="/" method="post">
+    <form action="/users" method="get">
         <div class="form-group row">
-            <label for="userid" class="col-sm-2 col-form-label"><input type="checkbox" name="check_userid"> User ID</label>
+            <label for="userid" class="col-sm-2 col-form-label"><input type="checkbox" name="checkuserid"> User ID</label>
             <div class="col-sm-3">
-                <input type="number" class="form-control" id="userid" placeholder="ID" name="userid">
+                <input type="number" class="form-control" id="userid" placeholder="ID" name="userid" value="<%= query.userid %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="fullname" class="col-sm-2 col-form-label"><input type="checkbox" name="check_fullname"> Name</label>
+            <label for="fullname" class="col-sm-2 col-form-label"><input type="checkbox" name="checkfullname"> Name</label>
             <div class="col-sm-3">
-                <input type="text" class="form-control" id="fullname" placeholder="fullname" name="fullname">
+                <input type="text" class="form-control" id="fullname" placeholder="Full Name" name="fullname" value="<%= query.fullname %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="email" class="col-sm-2 col-form-label"><input type="checkbox" name="check_email"> Email</label>
+            <label for="email" class="col-sm-2 col-form-label"><input type="checkbox" name="checkemail"> Email</label>
             <div class="col-sm-3">
-                <input type="text" class="form-control" id="email" placeholder="email" name="email">
+                <input type="text" class="form-control" id="email" placeholder="Email" name="email" value="<%= query.email %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="role" class="col-sm-2 col-form-label"><input type="checkbox" name="check_role"> Role</label>
+            <label for="role" class="col-sm-2 col-form-label"><input type="checkbox" name="checkrole"> Role</label>
             <div class="col-sm-3">
                 <select id="role" class="form-control" name="role">
                     <option disabled selected>Choose the role...</option>
-                    <option value="Manager" <%= query.check_role == "Manager" ? ' selected' : ''; %>>Manager</option>
-                    <option value="Software Developer" <%= query.check_role == "Software Developer" ? ' selected' : ''; %>>Software Developer</option>
-                    <option value="Quality Assurance" <%= query.check_role == "Quality Assurance" ? ' selected' : ''; %>>Quality Assurance</option>
+                    <option value="Manager" <%= query.checkrole == "Manager" ? ' selected' : ''; %>>Manager</option>
+                    <option value="Software Developer" <%= query.checkrole == "Software Developer" ? ' selected' : ''; %>>Software Developer</option>
+                    <option value="Quality Assurance" <%= query.checkrole == "Quality Assurance" ? ' selected' : ''; %>>Quality Assurance</option>
                 </select>
             </div>
         </div>
         <fieldset class="form-group">
             <div class="row">
-                <legend class="col-form-label col-sm-2 pt-0"><input type="checkbox" name="check_typejob" <%= query.check_typejob ? ' checked' : '' %>> Type Job</legend>
+                <legend class="col-form-label col-sm-2 pt-0"><input type="checkbox" name="checktypejob" <%= query.checktypejob ? ' checked' : '' %>> Type Job</legend>
                 <div class="col-sm-10">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="typejob" id="typejobfulltime" value="Full Time" <%= query.check_typejob == 'Full Time' ? ' checked' : '' %>>
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobfulltime" value="Full Time" <%= query.checktypejob == 'Full Time' ? ' checked' : '' %>>
                         <label class="form-check-label" for="typejobfulltime">
                             Full Time
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="typejob" id="typejobparttime" value="Part Time" <%= query.check_typejob == 'Part Time' ? ' checked' : '' %>>
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobparttime" value="Part Time" <%= query.checktypejob == 'Part Time' ? ' checked' : '' %>>
                         <label class="form-check-label" for="typejobparttime">
                             Part Time
                         </label>
@@ -53,13 +53,6 @@
                 </div>
             </div>
         </fieldset>
-        <!-- <div class="form-group row">
-            <label for="typejob" class="col-sm-2 col-form-label"><input type="checkbox" name="check_typejob" <%= query.check_typejob ? ' checked' : '' %>> Type Job</label>
-            <div class="col-sm-3">
-                <input class="form-control" type="radio" name="typejob" id="typejob" value="Full Time"
-                    <%= query.check_typejob == "Full Time" ? ' selected' : ''; %>/> Full Time
-            </div>
-        </div> -->
         <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
         <a href="/users"><button class="btn btn-outline-warning"><i class="fas fa-sync-alt"></i> Reset</button></a>
     </form>
@@ -120,29 +113,29 @@
                 <td><%= item.userid %></td>
                 <td><%= item.fullname %></td>
                 <td><%= item.email %></td>
-                <td> </td>
+                <td><%= item.role %> </td>
                 <td><%= item.typejob %></td>
-                <td><a href="users/edit/:userid"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
+                <td><a href="users/edit/:id"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
                             Edit</button></a>
-                    <a href="users/delete/:userid"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
+                    <a href="users/delete/:id"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
                             Delete</button></a>
                 </td>
             </tr>
             <% }) %>
         </tbody>
     </table>
-    <nav aria-label="...">
+    <nav aria-label="Page navigation example">
         <ul class="pagination">
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1">Previous</a>
+            <li class="page-item<%= pagination.page == 1 ? ' disabled' : '' %>"><a class="page-link"
+                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) - 1}`); %>">Previous</a>
             </li>
-            <li class="page-item active"><a class="page-link" href="#">1<span class="sr-only">(current)</span></a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
+            <% for (var i = 1; i <= pagination.pages; i++) { %>
+            <li class="page-item<%= i == pagination.page ? ' active' : '' %>"><a class="page-link"
+                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${i}`); %>"><%= i %></a>
             </li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
+            <% } %>
+            <li class="page-item<%= pagination.page == pagination.pages ? ' disabled' : '' %>"><a class="page-link"
+                    href="/users<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) + 1}`); %>">Next</a>
             </li>
         </ul>
     </nav>
