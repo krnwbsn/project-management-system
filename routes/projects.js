@@ -13,7 +13,7 @@ module.exports = (pool) => {
         const limit = 3;
         const offset = (page - 1) * limit;
         let params = [];
-        const url = req.url == '/' ? '/?page=1' : req.url;
+        const url = req.url == '/' ? '?page=1' : req.url;
 
         if (req.query.checkprojectid && req.query.projectid) {
             params.push(`projects.projectid = ${req.query.projectid}`)
@@ -73,9 +73,9 @@ module.exports = (pool) => {
                                 users: data.rows,
                                 pagination: { pages, page, url },
                                 user: req.session.user
+                                // option: JSON.parse(options.rows[0].projectsoptions)
                             })
-                                // ,
-                                // option: JSON.parse(options.rows[0].projectsoptions),
+                                
                         });
                     });
                 });
@@ -84,7 +84,7 @@ module.exports = (pool) => {
     });
 
     router.post('/', (req, res) => {
-        let sql = `UPDATE users SET projectsoptions = '${JSON.stringify(req.body)}' WHERE userid = ${req.session.user.userid}`
+        let sql = `UPDATE users SET projectoptions = '${JSON.stringify(req.body)}' WHERE userid = ${req.session.user.userid}`
         pool.query(sql, (err) => {
             if (err) throw err;
             res.redirect('/projects')
@@ -190,18 +190,77 @@ module.exports = (pool) => {
     });
 
     // overview
-    router.get('/overview/:projectid', helpers.isLoggedIn, (req, res, next) => {
-        res.render('projects/overview/view', { title: 'Overview', path: "projects" });
+    router.get('/overview/:id', helpers.isLoggedIn, (req, res, next) => {
+        let pid = parseInt(req.params.id);
+        let sqlOvw = `SELECT * FROM projects WHERE projectid = ${pid}`;
+        pool.query(sqlOvw, (err, response) => {
+            console.log(response)
+            if (err) {
+                res.send(err)
+            }
+            res.render('projects/overview/view', { 
+                title: 'Overview', 
+                path: 'projects',
+                data: response.rows[0]
+             });
+        });
     });
 
     // activity
-    router.get('/activity/:projectid', helpers.isLoggedIn, (req, res, next) => {
+    router.get('/activity/:id', helpers.isLoggedIn, (req, res, next) => {
         res.render('projects/activity/view', { title: 'Activity', path: "projects" });
     });
 
     // members
-    router.get('/members/:projectid', helpers.isLoggedIn, (req, res, next) => {
-        res.render('projects/members/list', { title: 'Members', path: "projects" });
+    router.get('/members/:id', helpers.isLoggedIn, (req, res, next) => {
+        const mid = req.params.id
+        const page = req.query.page || 1;
+        const limit = 3;
+        const offset = (page - 1) * limit;
+        let params = [];
+        const url = req.url == `/members/${mid}` ? `/members/${mid}?page=1` : req.url;
+
+        if (req.query.checkuserid && req.query.userid) {
+            params.push(`members.userid = ${req.query.userid}`)
+        }
+        if (req.query.checkfullname && req.query.fullname) {
+            params.push(`CONCAT (users.firstname,' ',users.lastname) ILIKE '%${req.query.fullname}%'`)
+        }
+        if (req.query.checkrole && req.query.role) {
+            params.push(`members.role = '${req.query.role}'`)
+        }
+        console.log('req.query ' + req.query)
+        let sql = `SELECT COUNT(userid) AS total FROM members WHERE members.projectid = ${mid}`
+        pool.query(sql, (err, result) => {
+
+            console.log('sql ' + sql)
+            if (err) {
+                return res.send(err)
+            }
+
+            let sqlMembers = `SELECT projects.projectid, members.id, members.role, CONCAT (users.firstname,' ',users.lastname) AS fullname FROM members LEFT JOIN projects ON projects.projectid = members.projectid LEFT JOIN users ON users.userid = members.userid WHERE members.projectid = ${mid}`;
+            if (params.length > 0) {
+                sqlMembers += ` WHERE ${params.join(' AND ')}`;
+            }
+            sqlMembers += ` ORDER BY members.id LIMIT ${limit} OFFSET ${offset}`;
+            console.log('sqlMembers ' + sqlMembers)
+            pool.query(sqlMembers, (err, response) => {
+                console.log('ini response ' + response)
+                const total = response.rows[0].total;
+                const pages = Math.ceil(total / limit);
+                let sqlOption = `SELECT memberoption FROM users WHERE userid = ${mid}`;
+                console.log('sqlOption ' + sqlOption)
+                pool.query(sqlOption, (err, data) => {
+                    res.render('projects/members/list', {
+                        title: 'Members',
+                        path: 'projects',
+                        data: response.rows,
+                        query: req.query,
+                        pagination: { pages, page, url },
+                    });
+                });
+            });
+        });
     });
 
     router.post('/members/:projectid', helpers.isLoggedIn, (req, res, next) => {

@@ -3,58 +3,79 @@
 <div class="container-fluid mtop">
     <h1>Edit Profile</h1>
     <hr />
-    <form action="/" method="post">
+    <form action="/profile" method="post">
         <div class="form-group row">
-            <label for="firstName" class="col-sm-1 col-form-label">First Name</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="firstName" placeholder="First Name" name="firstName">
+            <label for="firstname" class="col-sm-2 col-form-label">First Name</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="firstname" placeholder="First Name" name="firstname" value="<%= data.firstname %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="lastName" class="col-sm-1 col-form-label">Last Name</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="lastName" placeholder="Last Name" name="lastName">
+            <label for="lastname" class="col-sm-2 col-form-label">Last Name</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="lastname" placeholder="Last Name" name="lastname" value="<%= data.lastname %>">
             </div>
         </div>
         <div class="form-group row">
-            <label for="emailAddress" class="col-sm-1 col-form-label">Email Address</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="emailAddress" placeholder="Email Address"
-                    name="emailAddress" required autofocus>
+            <label for="email" class="col-sm-2 col-form-label">Email Address</label>
+            <div class="col-sm-3">
+                <input type="text" class="form-control" id="email" placeholder="Email Address" value="<%= data.email %>"
+                    name="email" disabled>
             </div>
         </div>
         <div class="form-group row">
-            <label for="accountPassword" class="col-sm-1 col-form-label">Password</label>
-            <div class="col-sm-2">
-                <input type="text" class="form-control" id="accountPassword" placeholder="Password"
-                    name="accountPassword" required autofocus>
+            <label for="password" class="col-sm-2 col-form-label">Password</label>
+            <div class="col-sm-3">
+                <input type="password" class="form-control" id="password" placeholder="Password" value="<%= data.password %>"
+                    name="password" required>
             </div>
         </div>
         <div class="form-group row">
-            <label for="member" class="col-sm-1 col-form-label">Position</label>
-            <div class="col-sm-2">
+            <label for="member" class="col-sm-2 col-form-label">Role</label>
+            <div class="col-sm-3">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="position" value="manager">
-                    <label class="form-check-label" for="manager">
+                    <input class="form-check-input" type="radio" name="role" value="Manager" <%= data.role == 'Manager' ? ' checked': '' %>>
+                    <label class="form-check-label" for="role">
                         Manager
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="position" value="softwareDeveloper">
-                    <label class="form-check-label" for="softwareDeveloper">
+                    <input class="form-check-input" type="radio" name="role" value="Software Developer" <%= data.role == 'Software Developer' ? ' checked': '' %>>
+                    <label class="form-check-label" for="role">
                         Software Developer
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="position" value="qualityAssurance">
-                    <label class="form-check-label" for="qualityAssurance">
+                    <input class="form-check-input" type="radio" name="role" value="Quality Assurance" <%= data.role == 'Quality Assurance' ? ' checked': '' %>>
+                    <label class="form-check-label" for="role">
                         Quality Assurance
                     </label>
                 </div>
             </div>
         </div>
+        <fieldset class="form-group">
+            <div class="row">
+                <legend class="col-form-label col-sm-2 pt-0">Type Job</legend>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobfulltime" value="Full Time"
+                            <%= data.typejob == 'Full Time' ? ' checked' : '' %>>
+                        <label class="form-check-label" for="typejobfulltime">
+                            Full Time
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobparttime" value="Part Time"
+                            <%= data.typejob == 'Part Time' ? ' checked' : '' %>>
+                        <label class="form-check-label" for="typejobparttime">
+                            Part Time
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
         <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Update</button>
-        <a href="projects.html"><button type="button" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
+        <a href="/projects"><button type="button" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
                 Cancel</button></a>
     </form>
 </div>

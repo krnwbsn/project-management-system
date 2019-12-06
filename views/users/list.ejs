@@ -115,9 +115,9 @@
                 <td><%= item.email %></td>
                 <td><%= item.role %> </td>
                 <td><%= item.typejob %></td>
-                <td><a href="users/edit/:id"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
+                <td><a href="users/edit/<%= item.userid %>"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
                             Edit</button></a>
-                    <a href="users/delete/:id"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
+                    <a href="users/delete/<%= item.userid %>"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
                             Delete</button></a>
                 </td>
             </tr>

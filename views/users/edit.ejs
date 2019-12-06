@@ -1,9 +1,9 @@
 <% include ../partials/header %>
 <% include ../partials/menu %>
-<div class="container-fluid" style="margin-top: 20px">
+<div class="container-fluid"">
     <h1>Edit User</h1>
     <hr />
-    <form action="/" method="post">
+    <form action="" method="post">
         <div class="form-group row">
             <label for="firstname" class="col-sm-2 col-form-label">First Name</label>
             <div class="col-sm-3">
@@ -25,7 +25,7 @@
         </div>
         <div class="form-group row">
             <label for="password" class="col-sm-2 col-form-label">Password</label>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <input type="text" class="form-control" id="password" placeholder="password" value="<%= item.password %>"
                     name="password" required autofocus>
             </div>
@@ -34,25 +34,44 @@
             <label for="role" class="col-sm-2 col-form-label">Role</label>
             <div class="col-sm-3">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="role" value="manager">
+                    <input class="form-check-input" type="radio" name="role" value="Manager" <%= item.role == 'Manager' ? ' checked': '' %>>
                     <label class="form-check-label" for="manager">
                         Manager
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="role" value="softwareDeveloper">
+                    <input class="form-check-input" type="radio" name="role" value="Software Developer" <%= item.role == 'Software Developer' ? ' checked': '' %>>
                     <label class="form-check-label" for="softwareDeveloper">
                         Software Developer
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="role" value="qualityAssurance">
+                    <input class="form-check-input" type="radio" name="role" value="Quality Assurance" <%= item.role == 'Quality Assurance' ? ' checked': '' %>>
                     <label class="form-check-label" for="qualityAssurance">
                         Quality Assurance
                     </label>
                 </div>
             </div>
         </div>
+        <fieldset class="form-group">
+            <div class="row">
+                <legend class="col-form-label col-sm-2 pt-0">Type Job</legend>
+                <div class="col-sm-10">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobfulltime" value="Full Time" <%= item.typejob == 'Full Time' ? ' checked' : '' %>>
+                        <label class="form-check-label" for="typejobfulltime">
+                            Full Time
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="typejob" id="typejobparttime" value="Part Time" <%= item.typejob == 'Part Time' ? ' checked' : '' %>>
+                        <label class="form-check-label" for="typejobparttime">
+                            Part Time
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
         <button type="submit" class="btn btn-primary"><i class="fas fa-edit"></i> Update</button>
         <a href="/users"><button type="button" class="btn btn-outline-warning"><i class="fas fa-redo-alt"></i>
                 Cancel</button></a>

@@ -14,53 +14,55 @@
   <link rel="icon" href="images/favicon.ico">
   <link rel="stylesheet" href="stylesheets/login.css">
 </head>
-<form class="form-signin" action="/login" method="POST">
-  <div class="text-center mb-4">
-    <img class="mb-4" src="images/logo.png" alt="" width="150">
-    <h1 class="h3 mb-3 font-weight-normal">Project Management System</h1>
-  </div>
 
-  <div class="form-label-group">
-    <input type="email" id="email" class="form-control" name="email" placeholder="Email address" required autofocus>
-    <label for="email" style="color: #a9a9a9">Email address</label>
-  </div>
-
-  <div class="form-label-group">
-    <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
-    <label for="password" style="color: #a9a9a9">Password</label>
-    <%= info %>
-  </div>
-
-  <div class="checkbox mb-3">
-    <label>
-      <input type="checkbox" value="remember-me"> Remember me
-    </label>
-  </div>
-  <button class="btn btn-primary btn-block" type="submit">
-    <i class="fas fa-sign-in-alt"></i> Sign In
-  </button>
-  <p>
-    <button class="btn btn-dark btn-block" style="margin-top: 10px" type="button" data-toggle="collapse"
-      data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-      <i class="fas fa-user-circle"></i> Account Information
-    </button>
-  </p>
-  <div class="collapse" id="collapseExample">
-    <div class="card card-body text-center">
-      <p>
-        <strong>Admin:</strong><br />
-        Email Address: admin@rubicamp.com<br />
-        Password: 123456
-        <br /><br />
-        <strong>User:</strong><br />
-        Email Address: user@rubicamp.com<br />
-        Password: 123456
-      </p>
+<body>
+  <form class="form-signin" action="/login" method="POST">
+    <div class="text-center mb-4">
+      <img class="mb-4" src="images/logo.png" alt="" width="150">
+      <h1 class="h3 mb-3 font-weight-normal">Project Management System</h1>
     </div>
-  </div>
-  <p class="mt-5 mb-3 text-muted text-center">
-    &copy; 2019 - Made with L&hearts;ve by <a href="https://github.com/krnwbsn">Krina Wibisana</a>
-  </p>
-</form>
 
-<% include partials/footer %>
+    <div class="form-label-group">
+      <input type="email" id="email" class="form-control" name="email" placeholder="Email address" required autofocus>
+      <label for="email" style="color: #a9a9a9">Email address</label>
+    </div>
+
+    <div class="form-label-group">
+      <input type="password" id="password" class="form-control" name="password" placeholder="Password" required>
+      <label for="password" style="color: #a9a9a9">Password</label>
+      <%= info %>
+    </div>
+
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit">
+      <i class="fas fa-sign-in-alt"></i> Sign In
+    </button>
+    <p>
+      <button class="btn btn-dark btn-block" style="margin-top: 10px" type="button" data-toggle="collapse"
+        data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        <i class="fas fa-user-circle"></i> Account Information
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+      <div class="card card-body text-center">
+        <p>
+          <strong>Admin:</strong><br />
+          Email Address: admin@rubicamp.com<br />
+          Password: 123456
+          <br /><br />
+          <strong>User:</strong><br />
+          Email Address: user@rubicamp.com<br />
+          Password: 123456
+        </p>
+      </div>
+    </div>
+    <p class="mt-5 mb-3 text-muted text-center">
+      &copy; 2019 - Made with L&hearts;ve by <a href="https://github.com/krnwbsn">Krina Wibisana</a>
+    </p>
+  </form>
+
+  <% include partials/footer %>

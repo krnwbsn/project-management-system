@@ -1,39 +1,35 @@
 <% include ../../partials/header %>
 <% include ../../partials/menu %>
 <div class="d-flex" id="wrapper">
-    <!-- Sidebar -->
     <% include ../../partials/sidebar %>
-    <!-- /#sidebar-wrapper -->
-
-    <!-- Page Content -->
     <div id="page-content-wrapper">
         <div class="container-fluid">
             <h1>Members</h1>
             <hr />
             <h3><i class="fas fa-filter"></i> Filters</h3>
-            <form action="/" method="post">
+            <form action="" method="post">
                 <div class="form-group row">
-                    <label for="id" class="col-sm-1 col-form-label"><input type="checkbox" name="check_id"> ID</label>
-                    <div class="col-sm-2">
-                        <input type="number" class="form-control" id="id" placeholder="ID" name="id">
+                    <label for="id" class="col-sm-2 col-form-label"><input type="checkbox" name="checkuserid" <%= query.checkuserid ? ' checked' : ''; %>/> ID</label>
+                    <div class="col-sm-3">
+                        <input type="number" class="form-control" id="id" placeholder="User ID" name="userid" value="<%= query.userid %>">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="name" class="col-sm-1 col-form-label"><input type="checkbox" name="check_name">
+                    <label for="name" class="col-sm-2 col-form-label"><input type="checkbox" name="checkfullname" <%= query.checkfullname ? ' checked' : ''; %>/>
                         Name</label>
-                    <div class="col-sm-2">
-                        <input type="text" class="form-control" id="name" placeholder="Name" name="name">
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="name" placeholder="Name" name="fullname" value="<%= query.fullname %>">
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label for="role" class="col-sm-1 col-form-label"><input type="checkbox" name="check_role">
+                    <label for="role" class="col-sm-2 col-form-label"><input type="checkbox" name="checkrole" <%= query.checkrole ? ' checked' : ''; %>/>
                         Role</label>
-                    <div class="col-sm-2">
+                    <div class="col-sm-3">
                         <select id="role" class="form-control" name="role">
                             <option disabled selected>Choose the role...</option>
-                            <option value="manager">Manager</option>
-                            <option value="softwareDeveloper">Software Developer</option>
-                            <option value="qualityAssurance">Quality Assurance</option>
+                            <option value="Manager" <%= query.checkrole == "Manager" ? ' selected' : ''; %>>Manager</option>
+                            <option value="Software Developer" <%= query.checkrole == "Software Developer" ? ' selected' : ''; %>>Software Developer</option>
+                            <option value="Quality Assurance" <%= query.checkrole == "Quality Assurance" ? ' selected' : ''; %>>Quality Assurance</option>
                         </select>
                     </div>
                 </div>
@@ -44,8 +40,8 @@
             <h3><i class="fas fa-columns"></i> Options</h3>
             <form>
                 <div class="form-group row">
-                    <div class="col-sm-1">Column</div>
-                    <div class="col-sm-2">
+                    <div class="col-sm-2">Column</div>
+                    <div class="col-sm-3">
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="id" value="id">
                             <label class="form-check-label" for="id">
