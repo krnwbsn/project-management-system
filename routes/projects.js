@@ -90,8 +90,7 @@ module.exports = (pool) => {
             res.redirect('/projects')
         });
     });
-
-    // add                                                                   
+                                                                
     router.get('/add', helpers.isLoggedIn, (req, res, next) => {
         let sqlAdd = `SELECT userid, firstname || ' ' || lastname AS fullname FROM users`;
         pool.query(sqlAdd, (err, result) => {
@@ -175,7 +174,6 @@ module.exports = (pool) => {
         });
     });
 
-    // delete
     router.get('/delete/:id', helpers.isLoggedIn, (req, res, next) => {
         let projectid = parseInt(req.params.id);
         let sqlDelete = `DELETE FROM members WHERE projectid = $1`;
@@ -189,26 +187,60 @@ module.exports = (pool) => {
         });
     });
 
-    // overview
     router.get('/overview/:id', helpers.isLoggedIn, (req, res, next) => {
-        let pid = parseInt(req.params.id);
-        let sqlOvw = `SELECT * FROM projects WHERE projectid = ${pid}`;
+        let projectid = parseInt(req.params.id);
+        let sqlOvw = `SELECT tracker, COUNT(issueid) AS open FROM issues WHERE projectid = ${projectid} AND status != 'Closed' GROUP BY tracker`;
         pool.query(sqlOvw, (err, response) => {
-            console.log(response)
-            if (err) {
-                res.send(err)
-            }
-            res.render('projects/overview/view', { 
-                title: 'Overview', 
-                path: 'projects',
-                data: response.rows[0]
-             });
+            let sqlOvwSecond = `SELECT COUNT(issueid) AS total FROM issues WHERE projectid = ${projectid} GROUP BY tracker`;
+            pool.query(sqlOvwSecond, (err, result) => {
+                let sqlOvwThird = `SELECT CONCAT(users.firstname,' ',users.lastname) AS fullname FROM members LEFT JOIN users ON members.userid = users.userid WHERE projectid = ${projectid}`;
+                pool.query(sqlOvwThird, (err, row) => {
+                    let sqlOvwForth = `SELECT projects.* FROM projects WHERE projectid = ${projectid}`;
+                    pool.query(sqlOvwForth, (err, count) => {
+                        console.log(count)
+                        if (err) {
+                            res.send(err)
+                        }
+                        res.render('projects/overview/view', {
+                            title: 'Overview',
+                            path: 'projects',
+                            response: response.rows,
+                            result: result.rows,
+                            row: row.rows,
+                            count: count.rows[0],
+                            projectid
+                        });
+                    });
+                });
+            });
         });
     });
 
-    // activity
     router.get('/activity/:id', helpers.isLoggedIn, (req, res, next) => {
-        res.render('projects/activity/view', { title: 'Activity', path: "projects" });
+        let projectid = parseInt(req.params.projectid);
+        let date = new Date();
+        let sevenDays = new Date().setTime(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
+        let sqlAct = `SELECT * FROM activity INNER JOIN users ON activity.author = users.userid WHERE time BETWEEN '${moment(sevenDays).format('YYYY-MM-DD')}' AND '${moment(date).add(1, 'days').format('YYYY-MM-DD')}' ORDER BY time DESC`;
+        pool.query(sqlAct, (err, data) => {
+            let result = {};
+            data.rows.forEach((item) => {
+                if (result[moment(item.time).format('dddd')] && result[moment(item.time).format('dddd')].data) {
+                    result[moment(item.time).format('dddd')].data.push(item);
+                } else {
+                    result[moment(item.time).format('dddd')] = { date: moment(item.time).format('YYYY-MM-DD'), data: [item] };
+                }
+            })
+            console.log(data.rows);
+
+            res.render('projects/activity/view', {
+                projectid,
+                path: 'projects',
+                data: result,
+                date,
+                sevenDays,
+                moment
+            });
+        });
     });
 
     // members
