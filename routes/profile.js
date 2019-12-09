@@ -22,11 +22,9 @@ module.exports = (pool) => {
     });
 
     router.post('/', helpers.isLoggedIn, (req, res, next) => {
-        console.log(req.body)
         let sql = `UPDATE users SET firstname=$1, lastname=$2, password=$3, role=$4, typejob=$5 WHERE userid=$6`;
         let insert = [req.body.firstname, req.body.lastname, req.body.password, req.body.role, req.body.typejob, req.session.user.userid];
         pool.query(sql, insert, (err) => {
-            console.log('sql & insert ' + sql + insert)
             if (err) {
                 res.send(err);
             }

@@ -50,32 +50,44 @@ module.exports = (pool) => {
       }
 
       sql += ` ORDER BY userid LIMIT ${limit} OFFSET ${offset}`;
-      console.log(sql);
       pool.query(sql, (err, response) => {
         if (err) {
           return res.send(err)
         }
-        res.render('users/list', {
-          title: 'Users',
-          path: 'users',
-          data: response.rows,
-          pagination: { pages, page, url },
-          moment,
-          query: req.query
+        let sqlusers = `SELECT * FROM users`;
+        let sqlOption = `SELECT usersoptions FROM users WHERE userid = ${req.session.user.userid}`;
+        pool.query(sqlusers, (err, data) => {
+          pool.query(sqlOption, (err, options) => {
+            if (err) {
+              return res.send(err)
+            }
+            res.render('users/list', {
+              title: 'Users',
+              path: 'users',
+              data: response.rows,
+              pagination: { pages, page, url },
+              moment,
+              query: req.query,
+              option: JSON.parse(options.rows[0].usersoptions)
+            });
+          });
         })
-      })
-    })
+      });
+    });
   });
 
   router.post('/', helpers.isLoggedIn, (req, res, next) => {
-    res.redirect('/users');
+    let sql = `UPDATE users SET usersoptions = '${JSON.stringify(req.body)}' WHERE userid = ${req.session.user.userid}`
+    pool.query(sql, (err) => {
+      if (err) throw err;
+      res.redirect('/projects')
+    });
   });
 
   router.get('/edit/:id', helpers.isLoggedIn, (req, res, next) => {
     let uid = parseInt(req.params.id);
     let sqlEdit = `SELECT * FROM users WHERE userid = $1`;
     pool.query(sqlEdit, [uid], (err, response) => {
-      console.log('Edit ' + sqlEdit)
       if (err) { res.send(err) };
       res.render('users/edit', {
         title: 'Edit Users',
@@ -83,7 +95,6 @@ module.exports = (pool) => {
         user: req.session.user,
         path: 'users'
       });
-      console.log(sqlEdit);
     });
   });
 
@@ -92,7 +103,6 @@ module.exports = (pool) => {
     let sqlEdit = `UPDATE users SET firstname=$1, lastname=$2, email=$3, password=$4, role=$5, typejob=$6 WHERE userid=$7`;
     let insert = [req.body.firstname, req.body.lastname, req.body.email, req.body.password, req.body.role, req.body.typejob, uid];
     pool.query(sqlEdit, insert, (err) => {
-      console.log('sql edit ' + sqlEdit)
       if (err) throw err;
       res.redirect('/users');
     })
@@ -112,8 +122,7 @@ module.exports = (pool) => {
   });
 
   router.post('/add', helpers.isLoggedIn, (req, res, next) => {
-    let sqlAdd = `INSERT INTO users(firstname, lastname, email, password, typejob, role, issuesoptions, memberoptions, projectsoptions, usersoptions) VALUES('${req.body.firstname}', '${req.body.lastname}', '${req.body.email}', '${req.body.password}', '${req.body.typejob}', '${req.body.role}', '{}', '{}', '{}', '{}')`;
-    console.log('sqlAdd ' + sqlAdd)
+    let sqlAdd = `INSERT INTO users(firstname, lastname, email, password, typejob, role, issuesoptions, membersoptions, projectsoptions, usersoptions) VALUES('${req.body.firstname}', '${req.body.lastname}', '${req.body.email}', '${req.body.password}', '${req.body.typejob}', '${req.body.role}', '{}', '{}', '{}', '{}')`;
     pool.query(sqlAdd, (err, result) => {
       if (err) throw err;
       res.redirect('/users');
@@ -122,7 +131,6 @@ module.exports = (pool) => {
 
   router.get('/delete/:id', helpers.isLoggedIn, (req, res, next) => {
     let sqlDelete = `DELETE FROM users WHERE userid = ${req.params.id}`;
-    console.log('Delete User ' + sqlDelete)
     pool.query(sqlDelete, (err, response) => {
       if (err) throw err;
       res.redirect('/users')

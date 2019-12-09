@@ -9,7 +9,7 @@
         <form action="" method="GET">
             <div class="form-group row">
                 <label for="issueid" class="col-sm-2 col-form-label"><input type="checkbox" name="checkissueid"
-                        <%= query.checkissueid ? ' checked' : '' %> />
+                        <%= query.checkissueid ? ' checked' : '' %>/>
                     Issue ID</label>
                 <div class="col-sm-3">
                     <input type="number" class="form-control" id="issueid" placeholder="Issue ID" name="issueid"
@@ -18,7 +18,7 @@
             </div>
             <div class="form-group row">
                 <label for="subject" class="col-sm-2 col-form-label"><input type="checkbox" name="checksubject"
-                        <%= query.checksubject ? ' checked' : '' %> />
+                        <%= query.checksubject ? ' checked' : '' %>/>
                     Subject</label>
                 <div class="col-sm-3">
                     <input type="text" class="form-control" id="subject" placeholder="Subject" name="subject"
@@ -27,7 +27,7 @@
             </div>
             <div class="form-group row">
                 <label for="tracker" class="col-sm-2 col-form-label"><input type="checkbox" name="checktracker"
-                        <%= query.checktracker ? ' checked' : '' %> />
+                        <%= query.checktracker ? ' checked' : '' %>/>
                     Tracker</label>
                 <div class="col-sm-3">
                     <select id="tracker" class="form-control" name="tracker">
@@ -45,83 +45,83 @@
         </form>
         <hr />
         <h3><i class="fas fa-columns"></i> Options</h3>
-        <form>
+        <form action="" method="POST">
             <div class="form-group row">
                 <div class="col-sm-1">Column</div>
                 <div class="col-sm-2">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="issueid" value="issueid">
-                        <label class="form-check-label" for="issueid">
+                        <input class="form-check-input" type="checkbox" name="oissueid" value="true" <%= option.oissueid == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="oissueid">
                             Issue ID
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="subject" value="subject">
-                        <label class="form-check-label" for="subject">
+                        <input class="form-check-input" type="checkbox" name="osubject" value="true" <%= option.osubject == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="osubject">
                             Subject
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="tracker" value="tracker">
-                        <label class="form-check-label" for="tracker">
+                        <input class="form-check-input" type="checkbox" name="otracker" value="true" <%= option.otracker == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="otracker">
                             Tracker
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="description" value="description">
-                        <label class="form-check-label" for="description">
+                        <input class="form-check-input" type="checkbox" name="odescription" value="true" <%= option.odescription == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="odescription">
                             Description
                         </label>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="status" value="status">
-                        <label class="form-check-label" for="status">
+                        <input class="form-check-input" type="checkbox" name="ostatus" value="true" <%= option.ostatus == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="ostatus">
                             Status
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="priority" value="priority">
-                        <label class="form-check-label" for="priority">
+                        <input class="form-check-input" type="checkbox" name="opriority" value="true" <%= option.opriority == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="opriority">
                             Priority
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="assignee" value="assignee">
-                        <label class="form-check-label" for="assignee">
+                        <input class="form-check-input" type="checkbox" name="oassignee" value="true" <%= option.oassignee == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="oassignee">
                             Assignee
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="startdate" value="startdate">
-                        <label class="form-check-label" for="startdate">
+                        <input class="form-check-input" type="checkbox" name="ostartdate" value="true" <%= option.ostartdate == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="ostartdate">
                             Start Date
                         </label>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="duedate" value="duedate">
-                        <label class="form-check-label" for="duedate">
+                        <input class="form-check-input" type="checkbox" name="oduedate" value="true" <%= option.oduedate == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="oduedate">
                             Due Date
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="esttime" value="esttime">
-                        <label class="form-check-label" for="esttime">
+                        <input class="form-check-input" type="checkbox" name="oesttime" value="true" <%= option.oesttime == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="oesttime">
                             Estimated Time
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="done" value="done">
-                        <label class="form-check-label" for="done">
+                        <input class="form-check-input" type="checkbox" name="odone" value="true" <%= option.odone == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="odone">
                             Done
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="author" value="author">
-                        <label class="form-check-label" for="author">
+                        <input class="form-check-input" type="checkbox" name="oauthor" value="true" <%= option.oauthor == "true" ? ' checked': '' %>>
+                        <label class="form-check-label" for="oauthor">
                             Author
                         </label>
                     </div>
@@ -132,18 +132,18 @@
         <table class="table table-striped" style="margin-top: 10px">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Subject</th>
-                    <th scope="col">Tracker</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Priority</th>
-                    <th scope="col">Assignee</th>
-                    <th scope="col">Start Date</th>
-                    <th scope="col">Due Date</th>
-                    <th scope="col">Est. Time</th>
-                    <th scope="col">Done</th>
-                    <th scope="col">Author</th>
+                    <% if(option.oissueid == "true") { %><th scope="col">#</th><% } %>
+                    <% if(option.osubject == "true") { %><th scope="col">Subject</th><% } %>
+                    <% if(option.otracker == "true") { %><th scope="col">Tracker</th><% } %>
+                    <% if(option.odescription == "true") { %><th scope="col">Description</th><% } %>
+                    <% if(option.ostatus == "true") { %><th scope="col">Status</th><% } %>
+                    <% if(option.opriority == "true") { %><th scope="col">Priority</th><% } %>
+                    <% if(option.oassignee == "true") { %><th scope="col">Assignee</th><% } %>
+                    <% if(option.ostartdate == "true") { %><th scope="col">Start Date</th><% } %>
+                    <% if(option.oduedate == "true") { %><th scope="col">Due Date</th><% } %>
+                    <% if(option.oesttime == "true") { %><th scope="col">Est. Time</th><% } %>
+                    <% if(option.odone == "true") { %><th scope="col">Done</th><% } %>
+                    <% if(option.oauthor == "true") { %><th scope="col">Author</th><% } %>
                     <th scope="col">P. Task</th>
                     <th scope="col">File</th>
                     <th scope="col">Action</th>
@@ -152,18 +152,18 @@
             <tbody>
                 <% data.forEach((item, i) => { %>
                 <tr>
-                    <td><%= item.issueid %></td>
-                    <td><%= item.subject %></td>
-                    <td><%= item.tracker %></td>
-                    <td><%= item.description %></td>
-                    <td><%= item.status %></td>
-                    <td><%= item.priority %></td>
-                    <td><%= item.firstname %></td>
-                    <td><%= moment(item.startdate).format('YYYY-MM-DD') %></td>
-                    <td><%= moment(item.duedate).format('YYYY-MM-DD') %></td>
-                    <td><%= item.estimatedtime %></td>
-                    <td><%= item.done %></td>
-                    <td><%= item.author %></td>
+                    <% if(option.oissueid == "true") { %><td><%= item.issueid %></td><% } %>
+                    <% if(option.osubject == "true") { %><td><%= item.subject %></td><% } %>
+                    <% if(option.otracker == "true") { %><td><%= item.tracker %></td><% } %>
+                    <% if(option.odescription == "true") { %><td><%= item.description %></td><% } %>
+                    <% if(option.ostatus == "true") { %><td><%= item.status %></td><% } %>
+                    <% if(option.opriority == "true") { %><td><%= item.priority %></td><% } %>
+                    <% if(option.oassignee == "true") { %><td><%= item.firstname %></td><% } %>
+                    <% if(option.ostartdate == "true") { %><td><%= moment(item.startdate).format('YYYY-MM-DD') %></td><% } %>
+                    <% if(option.oduedate == "true") { %><td><%= moment(item.duedate).format('YYYY-MM-DD') %></td><% } %>
+                    <% if(option.oesttime == "true") { %><td><%= item.estimatedtime %></td><% } %>
+                    <% if(option.odone == "true") { %><td><%= item.done %></td><% } %>
+                    <% if(option.oauthor == "true") { %><td><%= item.author %></td><% } %>
                     <td><%= item.parenttaskname %></td>
                     <td><button class="btn btn-outline-dark"><i class="fas fa-file-download"></i></td>
                     <td><a href="/projects/issues/<%= projectid %>/edit/<%= item.issueid %>"><button type="button"
@@ -175,19 +175,18 @@
                 <% }) %>
             </tbody>
         </table>
-        <nav aria-label="...">
+        <nav aria-label="Page navigation example">
             <ul class="pagination">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                <li class="page-item<%= pagination.page == 1 ? ' disabled' : '' %>"><a class="page-link"
+                        href="/projects<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) - 1}`); %>">Previous</a>
                 </li>
-                <li class="page-item active"><a class="page-link" href="#">1<span class="sr-only">(current)</span></a>
+                <% for (var i = 1; i <= pagination.pages; i++) { %>
+                <li class="page-item<%= i == pagination.page ? ' active' : '' %>"><a class="page-link"
+                        href="/projects<%= pagination.url.replace(`page=${pagination.page}`, `page=${i}`); %>"><%= i %></a>
                 </li>
-                <li class="page-item">
-                    <a class="page-link" href="#">2</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
+                <% } %>
+                <li class="page-item<%= pagination.page == pagination.pages ? ' disabled' : '' %>"><a class="page-link"
+                        href="/projects<%= pagination.url.replace(`page=${pagination.page}`, `page=${parseInt(pagination.page) + 1}`); %>">Next</a>
                 </li>
             </ul>
         </nav>

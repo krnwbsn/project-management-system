@@ -24,7 +24,6 @@ module.exports = (pool) => {
     let sql = `SELECT * FROM users WHERE email='${email}'`;
     
     pool.query(sql, (err, row) => {
-      console.log(row);
       if (row.rows.length > 0) {
         if (email == row.rows[0].email && password == row.rows[0].password) {
           row.rows[0].password = null;

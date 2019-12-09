@@ -42,24 +42,24 @@
     </form>
     <hr />
     <h3><i class="fas fa-columns"></i> Options</h3>
-    <form>
+    <form action="" method="POST">
         <div class="form-group row">
             <div class="col-sm-2">Column</div>
             <div class="col-sm-3">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="cprojectid" value="true"/>
+                    <input class="form-check-input" type="checkbox" name="oprojectid" value="true" <%= option.oprojectid == "true" ? ' checked': '' %>/>
                     <label class="form-check-label" for="projectid">
                         ID
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="cname" value="true"/>
+                    <input class="form-check-input" type="checkbox" name="oname" value="true" <%= option.oname == "true" ? ' checked': '' %>/>
                     <label class="form-check-label" for="name">
                         Name
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="cmember" value="true"/>
+                    <input class="form-check-input" type="checkbox" name="omember" value="true" <%= option.omember == "true" ? ' checked': '' %>/>
                     <label class="form-check-label" for="member">
                         Members
                     </label>
@@ -71,19 +71,18 @@
     <table class="table table-striped" style="margin-top: 10px">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Members</th>
+                <% if(option.oprojectid == "true") { %><th scope="col">#</th><% } %>
+                <% if(option.oname == "true") { %><th scope="col">Name</th><% } %>
+                <% if(option.omember == "true") { %><th scope="col">Members</th><% } %>
                 <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
             <% data.forEach((item) => { %>
             <tr>
-                <td><a href="projects/overview/<%= item.projectid %>"><button type="button"
-                            class="btn btn-outline-dark"><%= item.projectid %></button></a></td>
-                <td><%= item.name %></td>
-                <td><%= item.members %></td>
+                <% if(option.oprojectid == "true") { %><td><a href="projects/overview/<%= item.projectid %>"><button type="button" class="btn btn-outline-dark"><%= item.projectid %></button></a></td><% } %>
+                <% if(option.oname == "true") { %><td><%= item.name %></td><% } %>
+                <% if(option.omember == "true") { %><td><%= item.members %></td><% } %>
                 <td>
                     <a href="projects/edit/<%= item.projectid %>"><button type="button"
                             class="btn btn-outline-success"><i class="fas fa-edit"></i>

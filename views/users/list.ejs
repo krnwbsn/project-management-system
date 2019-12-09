@@ -58,37 +58,37 @@
     </form>
     <hr />
     <h3><i class="fas fa-columns"></i> Options</h3>
-    <form>
+    <form action="" method=POST>
         <div class="form-group row">
             <div class="col-sm-2">Column</div>
             <div class="col-sm-3">
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="id" value="id">
-                    <label class="form-check-label" for="id">
+                    <input class="form-check-input" type="checkbox" name="oid" value="true" <%= option.oid == "true" ? ' checked': '' %>/>
+                    <label class="form-check-label" for="oid">
                         ID
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="name" value="name">
-                    <label class="form-check-label" for="name">
+                    <input class="form-check-input" type="checkbox" name="oname" value="true" <%= option.oname == "true" ? ' checked': '' %>/>
+                    <label class="form-check-label" for="oname">
                         Name
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="email" value="email">
-                    <label class="form-check-label" for="email">
+                    <input class="form-check-input" type="checkbox" name="oemail" value="true" <%= option.oemail == "true" ? ' checked': '' %>>
+                    <label class="form-check-label" for="oemail">
                         Email
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="role" value="role">
-                    <label class="form-check-label" for="role">
+                    <input class="form-check-input" type="checkbox" name="orole" value="true" <%= option.orole == "true" ? ' checked': '' %>>
+                    <label class="form-check-label" for="orole">
                         Role
                     </label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="typejob" value="typejob">
-                    <label class="form-check-label" for="typejob">
+                    <input class="form-check-input" type="checkbox" name="otypejob" value="true" <%= option.otypejob == "true" ? ' checked': '' %>>
+                    <label class="form-check-label" for="otypejob">
                         Type Job
                     </label>
                 </div>
@@ -99,22 +99,22 @@
     <table class="table table-striped" style="margin-top: 10px">
         <thead>
             <tr>
-                <th scope="col">#</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Role</th>
-                <th scope="col">Type Job</th>
+                <% if(option.oid == "true") { %><th scope="col">#</th><% } %>
+                <% if(option.oname == "true") { %><th scope="col">Name</th><% } %>
+                <% if(option.oemail == "true") { %><th scope="col">Email</th><% } %>
+                <% if(option.orole == "true") { %><th scope="col">Role</th><% } %>
+                <% if(option.otypejob == "true") { %><th scope="col">Type Job</th><% } %>
                 <th scope="col">Action</th>
             </tr>
         </thead>
         <tbody>
             <% data.forEach((item) => { %>
             <tr>
-                <td><%= item.userid %></td>
-                <td><%= item.fullname %></td>
-                <td><%= item.email %></td>
-                <td><%= item.role %> </td>
-                <td><%= item.typejob %></td>
+                <% if(option.oid == "true") { %><td><%= item.userid %></td><% } %>
+                <% if(option.oname == "true") { %><td><%= item.fullname %></td><% } %>
+                <% if(option.oemail == "true") { %><td><%= item.email %></td><% } %>
+                <% if(option.orole == "true") { %><td><%= item.role %> </td><% } %>
+                <% if(option.otypejob == "true") { %><td><%= item.typejob %></td><% } %>
                 <td><a href="users/edit/<%= item.userid %>"><button type="button" class="btn btn-outline-success"><i class="fas fa-edit"></i>
                             Edit</button></a>
                     <a href="users/delete/<%= item.userid %>"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i>
