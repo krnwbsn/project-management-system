@@ -112,7 +112,7 @@ module.exports = (pool) => {
   });
 
   router.post('/add', helpers.isLoggedIn, (req, res, next) => {
-    let sqlAdd = `INSERT INTO users(firstname, lastname, email, password, typejob, role) VALUES('${req.body.firstname}', '${req.body.lastname}', '${req.body.email}', '${req.body.password}', '${req.body.typejob}', '${req.body.role}')`;
+    let sqlAdd = `INSERT INTO users(firstname, lastname, email, password, typejob, role, issuesoptions, memberoptions, projectsoptions, usersoptions) VALUES('${req.body.firstname}', '${req.body.lastname}', '${req.body.email}', '${req.body.password}', '${req.body.typejob}', '${req.body.role}', '{}', '{}', '{}', '{}')`;
     console.log('sqlAdd ' + sqlAdd)
     pool.query(sqlAdd, (err, result) => {
       if (err) throw err;

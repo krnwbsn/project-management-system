@@ -1,0 +1,198 @@
+<% include ../../partials/header %>
+<% include ../../partials/menu %>
+<div class="d-flex" id="wrapper">
+    <% include ../../partials/sidebar %>
+    <div class="container-fluid">
+        <h1>Issues</h1>
+        <hr />
+        <h3><i class="fas fa-filter"></i> Filters</h3>
+        <form action="" method="GET">
+            <div class="form-group row">
+                <label for="issueid" class="col-sm-2 col-form-label"><input type="checkbox" name="checkissueid"
+                        <%= query.checkissueid ? ' checked' : '' %> />
+                    Issue ID</label>
+                <div class="col-sm-3">
+                    <input type="number" class="form-control" id="issueid" placeholder="Issue ID" name="issueid"
+                        value="<%= query.issueid %>">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="subject" class="col-sm-2 col-form-label"><input type="checkbox" name="checksubject"
+                        <%= query.checksubject ? ' checked' : '' %> />
+                    Subject</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="subject" placeholder="Subject" name="subject"
+                        value="<%= query.subject %>">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="tracker" class="col-sm-2 col-form-label"><input type="checkbox" name="checktracker"
+                        <%= query.checktracker ? ' checked' : '' %> />
+                    Tracker</label>
+                <div class="col-sm-3">
+                    <select id="tracker" class="form-control" name="tracker">
+                        <option disabled selected>Choose the Tracker...</option>
+                        <option value="Bug" <%= query.checktracker == "Bug" ? ' selected' : '' %>>Bug</option>
+                        <option value="Feature" <%= query.checktracker == "Feature" ? ' selected' : '' %>>Feature
+                        </option>
+                        <option value="Support" <%= query.checktracker == "Support" ? ' selected' : '' %>>Support
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+            <button class="btn btn-outline-warning" href="/projects/issues/<%= projectid %>"><i class="fas fa-sync-alt"></i> Reset</button>
+        </form>
+        <hr />
+        <h3><i class="fas fa-columns"></i> Options</h3>
+        <form>
+            <div class="form-group row">
+                <div class="col-sm-1">Column</div>
+                <div class="col-sm-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="issueid" value="issueid">
+                        <label class="form-check-label" for="issueid">
+                            Issue ID
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="subject" value="subject">
+                        <label class="form-check-label" for="subject">
+                            Subject
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="tracker" value="tracker">
+                        <label class="form-check-label" for="tracker">
+                            Tracker
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="description" value="description">
+                        <label class="form-check-label" for="description">
+                            Description
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="status" value="status">
+                        <label class="form-check-label" for="status">
+                            Status
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="priority" value="priority">
+                        <label class="form-check-label" for="priority">
+                            Priority
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="assignee" value="assignee">
+                        <label class="form-check-label" for="assignee">
+                            Assignee
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="startdate" value="startdate">
+                        <label class="form-check-label" for="startdate">
+                            Start Date
+                        </label>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="duedate" value="duedate">
+                        <label class="form-check-label" for="duedate">
+                            Due Date
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="esttime" value="esttime">
+                        <label class="form-check-label" for="esttime">
+                            Estimated Time
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="done" value="done">
+                        <label class="form-check-label" for="done">
+                            Done
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="author" value="author">
+                        <label class="form-check-label" for="author">
+                            Author
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-check-circle"></i> Apply</button>
+        </form>
+        <table class="table table-striped" style="margin-top: 10px">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Subject</th>
+                    <th scope="col">Tracker</th>
+                    <th scope="col">Description</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Priority</th>
+                    <th scope="col">Assignee</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Est. Time</th>
+                    <th scope="col">Done</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">P. Task</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.forEach((item, i) => { %>
+                <tr>
+                    <td><%= item.issueid %></td>
+                    <td><%= item.subject %></td>
+                    <td><%= item.tracker %></td>
+                    <td><%= item.description %></td>
+                    <td><%= item.status %></td>
+                    <td><%= item.priority %></td>
+                    <td><%= item.firstname %></td>
+                    <td><%= moment(item.startdate).format('YYYY-MM-DD') %></td>
+                    <td><%= moment(item.duedate).format('YYYY-MM-DD') %></td>
+                    <td><%= item.estimatedtime %></td>
+                    <td><%= item.done %></td>
+                    <td><%= item.author %></td>
+                    <td><%= item.parenttaskname %></td>
+                    <td><button class="btn btn-outline-dark"><i class="fas fa-file-download"></i></td>
+                    <td><a href="/projects/issues/<%= projectid %>/edit/<%= item.issueid %>"><button type="button"
+                                class="btn btn-outline-success"><i class="fas fa-edit"></i></button></a>
+                        <a href="<%= projectid %>/delete/<%= item.issueid %>"><button type="button"
+                                class="btn btn-outline-danger"><i class="fas fa-trash"></i></button></a>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <nav aria-label="...">
+            <ul class="pagination">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1<span class="sr-only">(current)</span></a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+        <a href="<%= projectid %>/add"><button class="btn btn-primary"><i class="fas fa-plus"></i> Add</button></a>
+    </div>
+    <!-- /#page-content-wrapper -->
+</div>
+<% include ../../partials/footer %>
