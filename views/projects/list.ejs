@@ -87,7 +87,7 @@
                     <a href="projects/edit/<%= item.projectid %>"><button type="button"
                             class="btn btn-outline-success"><i class="fas fa-edit"></i>
                             Edit</button></a>
-                    <a href="projects/delete/<%= item.projectid %>"><button type="button" class="btn btn-outline-danger"><i
+                    <a href="projects/delete/<%= item.projectid %>"><button type="button" class="btn btn-outline-danger" <%= isadmin != true ? ' disabled' : '' %>><i
                                 class="fas fa-trash"></i>
                             Delete</button></a>
                 </td>

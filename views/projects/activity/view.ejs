@@ -11,13 +11,13 @@
         <div class="container-fluid">
             <h1 class="mt-4">Activity</h1>
             <hr />
-            <h3>Project #<%= projectid %> (<%= projectname %>)</h3>
-            <% actperdate.forEach((item) => { %>
+            <h3>Project #<%= projectid %> (<%= result.projectname %>)</h3>
+            <% response.forEach((item) => { %>
             <div class="card bg-light mb-3" style="max-width: 40rem;">
                 <div class="card-header">
                     <strong><%= item.date %></strong>
                 </div>
-                <% item.data.forEach((list) => { %>
+                <% response.forEach((list) => { %>
                 <div class="card-body">
                     <p class="card-text">
                         <span class="badge badge-primary"><%= list.timeactivity %></span><br />

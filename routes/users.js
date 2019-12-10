@@ -51,25 +51,28 @@ module.exports = (pool) => {
 
       sql += ` ORDER BY userid LIMIT ${limit} OFFSET ${offset}`;
       pool.query(sql, (err, response) => {
-        if (err) {
-          return res.send(err)
-        }
         let sqlusers = `SELECT * FROM users`;
         let sqlOption = `SELECT usersoptions FROM users WHERE userid = ${req.session.user.userid}`;
         pool.query(sqlusers, (err, data) => {
           pool.query(sqlOption, (err, options) => {
-            if (err) {
-              return res.send(err)
-            }
-            res.render('users/list', {
-              title: 'Users',
-              path: 'users',
-              data: response.rows,
-              pagination: { pages, page, url },
-              moment,
-              query: req.query,
-              option: JSON.parse(options.rows[0].usersoptions)
-            });
+            let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+            pool.query(sqladmin, (err, admin) => {
+              if (err) {
+                return res.send(err)
+              }
+              admin = admin.rows;
+              let isadmin = admin[0].isadmin;
+              res.render('users/list', {
+                title: 'Users',
+                path: 'users',
+                data: response.rows,
+                isadmin,
+                pagination: { pages, page, url },
+                moment,
+                query: req.query,
+                option: JSON.parse(options.rows[0].usersoptions)
+              });
+            })
           });
         })
       });
@@ -79,7 +82,9 @@ module.exports = (pool) => {
   router.post('/', helpers.isLoggedIn, (req, res, next) => {
     let sql = `UPDATE users SET usersoptions = '${JSON.stringify(req.body)}' WHERE userid = ${req.session.user.userid}`
     pool.query(sql, (err) => {
-      if (err) throw err;
+      if (err) {
+        return res.send(err)
+      }
       res.redirect('/projects')
     });
   });
@@ -88,13 +93,21 @@ module.exports = (pool) => {
     let uid = parseInt(req.params.id);
     let sqlEdit = `SELECT * FROM users WHERE userid = $1`;
     pool.query(sqlEdit, [uid], (err, response) => {
-      if (err) { res.send(err) };
-      res.render('users/edit', {
-        title: 'Edit Users',
-        item: response.rows[0],
-        user: req.session.user,
-        path: 'users'
-      });
+      let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+      pool.query(sqladmin, (err, admin) => {
+        if (err) {
+          return res.send(err)
+        }
+        admin = admin.rows;
+        let isadmin = admin[0].isadmin;
+        res.render('users/edit', {
+          title: 'Edit Users',
+          item: response.rows[0],
+          user: req.session.user,
+          isadmin,
+          path: 'users'
+        });
+      })
     });
   });
 
@@ -111,13 +124,21 @@ module.exports = (pool) => {
   router.get('/add', helpers.isLoggedIn, (req, res, next) => {
     let sqlAdd = `SELECT * FROM users`
     pool.query(sqlAdd, (err, result) => {
-      if (err) throw err;
-      res.render('users/add', {
-        title: 'Add Users',
-        path: 'users',
-        data: result.rows,
-        user: req.session.user
-      });
+      let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+      pool.query(sqladmin, (err, admin) => {
+        if (err) {
+          return res.send(err)
+        };
+        admin = admin.rows;
+        let isadmin = admin[0].isadmin;
+        res.render('users/add', {
+          title: 'Add Users',
+          path: 'users',
+          isadmin,
+          data: result.rows,
+          user: req.session.user
+        });
+      })
     });
   });
 
@@ -132,8 +153,15 @@ module.exports = (pool) => {
   router.get('/delete/:id', helpers.isLoggedIn, (req, res, next) => {
     let sqlDelete = `DELETE FROM users WHERE userid = ${req.params.id}`;
     pool.query(sqlDelete, (err, response) => {
-      if (err) throw err;
-      res.redirect('/users')
+      let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+      pool.query(sqladmin, (err, admin) => {
+        if (err) {
+          return res.send(err)
+        };
+        admin = admin.rows;
+        let isadmin = admin[0].isadmin;
+        res.redirect('/users')
+      })
     });
   });
 

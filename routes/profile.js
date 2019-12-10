@@ -12,11 +12,17 @@ module.exports = (pool) => {
             if (err) {
                 res.send(err)
             }
-            res.render('profile/view', {
-                user: req.session.user,
-                path: 'profile',
-                data: result.rows[0],
-                result
+            let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+            pool.query(sqladmin, (err, admin) => {
+                admin = admin.rows;
+                let isadmin = admin[0].isadmin;
+                res.render('profile/view', {
+                    user: req.session.user,
+                    path: 'profile',
+                    data: result.rows[0],
+                    result,
+                    isadmin
+                });
             });
         });
     });
