@@ -110,7 +110,7 @@
             </li>
         </ul>
     </nav>
-    <a href="projects/add"><button class="btn btn-primary"><i class="fas fa-plus"></i> Add</button></a>
+    <a href="projects/add"><button class="btn btn-primary" <%= isadmin != true ? ' disabled' : '' %>><i class="fas fa-plus" ></i> Add</button></a>
 </div>
 
 <% include ../partials/footer %>

@@ -218,17 +218,23 @@ module.exports = (pool) => {
                 pool.query(sqlOvwThird, (err, row) => {
                     let sqlOvwForth = `SELECT projects.* FROM projects WHERE projectid = ${projectid}`;
                     pool.query(sqlOvwForth, (err, count) => {
-                        if (err) {
-                            res.send(err)
-                        }
-                        res.render('projects/overview/view', {
-                            title: 'Overview',
-                            path: 'projects',
-                            response: response.rows,
-                            result: result.rows[0],
-                            row: row.rows,
-                            count: count.rows[0],
-                            projectid
+                        let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                        pool.query(sqladmin, (err, admin) => {
+                            admin = admin.rows;
+                            let isadmin = admin[0].isadmin;
+                            if (err) {
+                                res.send(err)
+                            }
+                            res.render('projects/overview/view', {
+                                title: 'Overview',
+                                path: 'projects',
+                                response: response.rows,
+                                result: result.rows[0],
+                                row: row.rows,
+                                isadmin,
+                                count: count.rows[0],
+                                projectid
+                            });
                         });
                     });
                 });
@@ -258,20 +264,23 @@ module.exports = (pool) => {
             return moment(date).format("MMMM Do, YYYY");
         }
         pool.query(sqlAct, (err, response) => {
-            if (err) {
-                res.send(err)
-            }
             pool.query(sqlProjectName, (err, result) => {
-                if (err) {
-                    res.send(err)
-                }
-                res.render('projects/activity/view', {
-                    title: 'Activity',
-                    path: 'projects',
-                    projectid,
-                    moment,
-                    result: result.rows,
-                    response: response.rows
+                let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                pool.query(sqladmin, (err, admin) => {
+                    admin = admin.rows;
+                    let isadmin = admin[0].isadmin;
+                    if (err) {
+                        res.send(err)
+                    }
+                    res.render('projects/activity/view', {
+                        title: 'Activity',
+                        path: 'projects',
+                        projectid,
+                        isadmin,
+                        moment,
+                        result: result.rows,
+                        response: response.rows
+                    });
                 });
             });
         });
@@ -298,9 +307,6 @@ module.exports = (pool) => {
         pool.query(sql, (err, result) => {
             const total = result.rows[0].total;
             const pages = Math.ceil(total / limit);
-            if (err) {
-                return res.send(err)
-            }
             let sqlMembers = `SELECT members.userid, members.role, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM members INNER JOIN users USING (userid) WHERE projectid = ${projectid}`;
             if (params.length > 0) {
                 sqlMembers += ` WHERE ${params.join(' AND ')}`;
@@ -309,16 +315,25 @@ module.exports = (pool) => {
             pool.query(sqlMembers, (err, response) => {
                 let sqlOption = `SELECT membersoptions FROM users WHERE userid = ${req.session.user.userid}`;
                 pool.query(sqlOption, (err, options) => {
-                    res.render('projects/members/list', {
-                        projectid,
-                        title: 'Members',
-                        path: 'projects',
-                        data: response.rows,
-                        query: req.query,
-                        moment,
-                        pagination: { pages, page, url },
-                        option: JSON.parse(options.rows[0].membersoptions)
-                    });
+                    let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                    pool.query(sqladmin, (err, admin) => {
+                        admin = admin.rows;
+                        let isadmin = admin[0].isadmin;
+                        if (err) {
+                            return res.send(err)
+                        }
+                        res.render('projects/members/list', {
+                            projectid,
+                            title: 'Members',
+                            path: 'projects',
+                            data: response.rows,
+                            query: req.query,
+                            moment,
+                            isadmin,
+                            pagination: { pages, page, url },
+                            option: JSON.parse(options.rows[0].membersoptions)
+                        });
+                    })
                 });
             });
         });
@@ -340,17 +355,23 @@ module.exports = (pool) => {
         pool.query(sqlAddMembers, (err, result) => {
             let sqlAddNext = `SELECT members.projectid, MAX(projects.name) projectname FROM members INNER JOIN projects USING (projectid) INNER JOIN users USING (userid) WHERE projectid=${projectid} GROUP BY projectid ORDER BY projectid`;
             pool.query(sqlAddNext, (err, response) => {
-                if (err) {
-                    res.send(err)
-                };
-                res.render('projects/members/add', {
-                    title: 'Add Members',
-                    path: 'projects',
-                    users: result.rows,
-                    user: req.session.user,
-                    projectid,
-                    data: result.rows[0],
-                    project: response.rows[0]
+                let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                pool.query(sqladmin, (err, admin) => {
+                    admin = admin.rows;
+                    let isadmin = admin[0].isadmin;
+                    if (err) {
+                        res.send(err)
+                    };
+                    res.render('projects/members/add', {
+                        title: 'Add Members',
+                        path: 'projects',
+                        users: result.rows,
+                        user: req.session.user,
+                        projectid,
+                        isadmin,
+                        data: result.rows[0],
+                        project: response.rows[0]
+                    });
                 });
             });
         });
@@ -372,19 +393,22 @@ module.exports = (pool) => {
         let sqlEditMembers = `SELECT members.userid, members.role, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM members INNER JOIN users ON members.userid = users.userid WHERE members.projectid = ${projectid} AND members.userid = ${userid}`;
         pool.query(sqlEditMembers, (err, result) => {
             let sqlEditPrName = `SELECT members.projectid, MAX(projects.name) projectname FROM members INNER JOIN projects USING (projectid) INNER JOIN users USING (userid) WHERE projectid=${projectid} GROUP BY projectid ORDER BY projectid`;
-            if (err) {
-                res.send(err)
-            };
             pool.query(sqlEditPrName, (err, response) => {
-                if (err) {
-                    res.send(err)
-                };
-                res.render('projects/members/edit', {
-                    title: 'Edit Members',
-                    path: 'projects',
-                    item: result.rows[0],
-                    data: response.rows[0],
-                    projectid
+                let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                pool.query(sqladmin, (err, admin) => {
+                    admin = admin.rows;
+                    let isadmin = admin[0].isadmin;
+                    if (err) {
+                        res.send(err)
+                    };
+                    res.render('projects/members/edit', {
+                        title: 'Edit Members',
+                        path: 'projects',
+                        item: result.rows[0],
+                        data: response.rows[0],
+                        isadmin,
+                        projectid
+                    });
                 });
             });
         });
@@ -408,10 +432,15 @@ module.exports = (pool) => {
         let userid = parseInt(req.params.userid);
         let sqlDelMembers = `DELETE FROM members WHERE projectid = ${projectid} AND userid = ${userid}`;
         pool.query(sqlDelMembers, (err, result) => {
-            if (err) {
-                res.send(err)
-            };
-            res.redirect(`/projects/members/${projectid}`)
+            let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+            pool.query(sqladmin, (err, admin) => {
+                admin = admin.rows;
+                let isadmin = admin[0].isadmin;
+                if (err) {
+                    res.send(err)
+                };
+                res.redirect(`/projects/members/${projectid}`)
+            });
         });
     });
 
@@ -460,23 +489,26 @@ module.exports = (pool) => {
             sqlIssues += ` ORDER BY i1.issueid LIMIT ${limit} OFFSET ${offset}`
 
             pool.query(sqlIssues, (err, result) => {
-                if (err) {
-                    res.send(err)
-                };
                 let sqlOptions = `SELECT issuesoptions FROM users WHERE userid = ${req.session.user.userid}`;
                 pool.query(sqlOptions, (err, options) => {
-                    if (err) {
-                        res.send(err)
-                    }
-                    res.render('projects/issues/list', {
-                        title: 'Issues',
-                        path: 'projects',
-                        data: result.rows,
-                        query,
-                        projectid,
-                        moment,
-                        option: JSON.parse(options.rows[0].issuesoptions),
-                        pagination: { pages, page, url }
+                    let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                    pool.query(sqladmin, (err, admin) => {
+                        admin = admin.rows;
+                        let isadmin = admin[0].isadmin;
+                        if (err) {
+                            res.send(err)
+                        }
+                        res.render('projects/issues/list', {
+                            title: 'Issues',
+                            path: 'projects',
+                            data: result.rows,
+                            query,
+                            projectid,
+                            moment,
+                            isadmin,
+                            option: JSON.parse(options.rows[0].issuesoptions),
+                            pagination: { pages, page, url }
+                        });
                     });
                 });
             });
@@ -504,21 +536,24 @@ module.exports = (pool) => {
         let sqlParent = `SELECT issueid, subject, parenttask FROM issues WHERE projectid = ${projectid}`
 
         pool.query(sqlProjectName, (err, data) => {
-            if (err) {
-                res.send(err)
-            };
             pool.query(sqlAddIssues, (err, result) => {
-                if (err) {
-                    res.send(err)
-                };
                 pool.query(sqlParent, (err, response) => {
-                    res.render('projects/issues/add', {
-                        title: 'Add Issues',
-                        path: 'projects',
-                        data: data.rows[0],
-                        result: result.rows,
-                        response: response.rows,
-                        projectid
+                    let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                    pool.query(sqladmin, (err, admin) => {
+                        admin = admin.rows;
+                        let isadmin = admin[0].isadmin;
+                        if (err) {
+                            res.send(err)
+                        };
+                        res.render('projects/issues/add', {
+                            title: 'Add Issues',
+                            path: 'projects',
+                            data: data.rows[0],
+                            result: result.rows,
+                            response: response.rows,
+                            projectid,
+                            isadmin
+                        });
                     });
                 });
             });
@@ -576,29 +611,29 @@ module.exports = (pool) => {
 			LEFT JOIN issues i2
             ON i1.parenttask = i2.issueid WHERE i1.issueid = ${issueid}`;
         pool.query(sqlGetEdit, (err, data) => {
-            let sqlGetName = `SELECT members.projectid, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM members INNER JOIN users ON members.userid = users.userid WHERE members.projectid = ${projectid}`
-            if (err) {
-                res.send(err)
-            }
+            let sqlGetName = `SELECT members.projectid, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM members INNER JOIN users ON members.userid = users.userid WHERE members.projectid = ${projectid}`;
             pool.query(sqlGetName, (err, result) => {
-                if (err) {
-                    res.send(err)
-                }
                 const subquery = `SELECT issues.issueid FROM issues WHERE projectid=${projectid} AND issueid=${issueid}`;
                 let sqlParent = `SELECT issues.issueid, subject FROM issues WHERE issueid NOT IN (${subquery})`;
                 pool.query(sqlParent, (err, response) => {
-                    if (err) {
-                        res.send(err)
-                    }
-                    res.render('projects/issues/edit', {
-                        title: 'Edit Issue',
-                        path: 'projects',
-                        projectid,
-                        moment,
-                        data: data.rows[0],
-                        result: result.rows[0],
-                        response: response.rows[0],
-                        assignee: data.rows.map(item => item.userid)
+                    let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                    pool.query(sqladmin, (err, admin) => {
+                        admin = admin.rows;
+                        let isadmin = admin[0].isadmin;
+                        if (err) {
+                            res.send(err)
+                        }
+                        res.render('projects/issues/edit', {
+                            title: 'Edit Issue',
+                            path: 'projects',
+                            projectid,
+                            moment,
+                            isadmin,
+                            data: data.rows[0],
+                            result: result.rows[0],
+                            response: response.rows[0],
+                            assignee: data.rows.map(item => item.userid)
+                        });
                     });
                 });
             });
@@ -626,7 +661,6 @@ module.exports = (pool) => {
             sampleFile.mv(path.join(__dirname, `../public/images/${nameFile}`), function (err) {
                 if (err)
                     return res.status(500).send(err);
-
                 pool.query(sqlPostIssues, (err, result) => {
                     if (err) {
                         res.send(err)
@@ -642,10 +676,15 @@ module.exports = (pool) => {
         let issueid = parseInt(req.params.issueid);
         let sqlDelIssue = `DELETE FROM issues WHERE projectid = ${projectid} AND issueid = ${issueid}`
         pool.query(sqlDelIssue, (err, result) => {
-            if (err) {
-                res.send(err)
-            };
-            res.redirect(`/projects/issues/${projectid}`);
+            let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+            pool.query(sqladmin, (err, admin) => {
+                admin = admin.rows;
+                let isadmin = admin[0].isadmin;
+                if (err) {
+                    res.send(err)
+                };
+                res.redirect(`/projects/issues/${projectid}`);
+            })
         })
     });
     return router;
