@@ -87,9 +87,7 @@
                     <a href="projects/edit/<%= item.projectid %>"><button type="button"
                             class="btn btn-outline-success"><i class="fas fa-edit"></i>
                             Edit</button></a>
-                    <a href="projects/delete/<%= item.projectid %>"><button type="button" class="btn btn-outline-danger" <%= isadmin != true ? ' disabled' : '' %>><i
-                                class="fas fa-trash"></i>
-                            Delete</button></a>
+                    <% if(isadmin) { %><a href="projects/delete/<%= item.projectid %>"><button type="button" class="btn btn-outline-danger"><i class="fas fa-trash"></i> Delete</button></a><% } %>
                 </td>
             </tr>
             <% }) %>
@@ -110,7 +108,7 @@
             </li>
         </ul>
     </nav>
-    <a href="projects/add"><button class="btn btn-primary" <%= isadmin != true ? ' disabled' : '' %>><i class="fas fa-plus" ></i> Add</button></a>
+    <% if(isadmin) { %><a href="projects/add"><button class="btn btn-primary" <%= isadmin != true ? ' disabled' : '' %>><i class="fas fa-plus" ></i> Add</button></a><% } %>
 </div>
 
 <% include ../partials/footer %>
