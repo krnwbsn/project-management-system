@@ -248,7 +248,6 @@ module.exports = (pool) => {
         (time AT TIME ZONE 'Asia/Jakarta' AT time zone 'asia/jakarta')::time timeactivity,
         title, description, author
         FROM activity WHERE projectid = ${projectid}`;
-        console.log(sqlAct)
         let sqlProjectName = `SELECT DISTINCT members.projectid, projects.name
         FROM members INNER JOIN projects USING (projectid) 
         INNER JOIN users USING (userid) WHERE projectid = ${projectid}`;
@@ -646,7 +645,6 @@ module.exports = (pool) => {
         let { tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, parenttask } = req.body
         if (!req.files || Object.keys(req.files).length === 0) {
             sqlPostIssues = `UPDATE issues SET projectid = ${projectid}, tracker = '${tracker}', subject = '${subject}', description = '${description}', status = '${status}', priority = '${priority}', assignee = ${assignee}, startdate = '${startdate}', duedate = '${duedate}', estimatedtime = ${estimatedtime}, done = ${done}, author = ${req.session.user.userid}, parenttask = '${parenttask}', createddate = now(), updateddate = now(), files = 'null' WHERE issueid = ${issueid}`;
-            console.log(sqlPostIssues)
             pool.query(sqlPostIssues, (err, result) => {
                 if (err) {
                     res.send(err)
