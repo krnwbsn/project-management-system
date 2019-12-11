@@ -62,16 +62,20 @@ module.exports = (pool) => {
               }
               admin = admin.rows;
               let isadmin = admin[0].isadmin;
-              res.render('users/list', {
-                title: 'Users',
-                path: 'users',
-                data: response.rows,
-                isadmin,
-                pagination: { pages, page, url },
-                moment,
-                query: req.query,
-                option: JSON.parse(options.rows[0].usersoptions)
-              });
+              if (isadmin == true) {
+                res.render('users/list', {
+                  title: 'Users',
+                  path: 'users',
+                  data: response.rows,
+                  isadmin,
+                  pagination: { pages, page, url },
+                  moment,
+                  query: req.query,
+                  option: JSON.parse(options.rows[0].usersoptions)
+                });
+              } else {
+                res.redirect('/projects')
+              }
             })
           });
         })
@@ -100,13 +104,17 @@ module.exports = (pool) => {
         }
         admin = admin.rows;
         let isadmin = admin[0].isadmin;
-        res.render('users/edit', {
-          title: 'Edit Users',
-          item: response.rows[0],
-          user: req.session.user,
-          isadmin,
-          path: 'users'
-        });
+        if (isadmin == 'true') {
+          res.render('users/edit', {
+            title: 'Edit Users',
+            item: response.rows[0],
+            user: req.session.user,
+            isadmin,
+            path: 'users'
+          });
+        } else {
+          res.redirect('/projects')
+        }
       })
     });
   });
@@ -131,13 +139,17 @@ module.exports = (pool) => {
         };
         admin = admin.rows;
         let isadmin = admin[0].isadmin;
-        res.render('users/add', {
-          title: 'Add Users',
-          path: 'users',
-          isadmin,
-          data: result.rows,
-          user: req.session.user
-        });
+        if (isadmin == 'true') {
+          res.render('users/add', {
+            title: 'Add Users',
+            path: 'users',
+            isadmin,
+            data: result.rows,
+            user: req.session.user
+          });
+        } else {
+          res.redirect('/projects')
+        }
       })
     });
   });
@@ -160,7 +172,11 @@ module.exports = (pool) => {
         };
         admin = admin.rows;
         let isadmin = admin[0].isadmin;
-        res.redirect('/users')
+        if (isadmin == 'true') {
+          res.redirect('/users')
+        } else {
+          res.redirect('/projects')
+        }
       })
     });
   });

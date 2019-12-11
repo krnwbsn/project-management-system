@@ -188,7 +188,7 @@ module.exports = (pool) => {
                 }
                 let sqlPush = `INSERT INTO members (userid, projectid) VALUES ${params.join(', ')}`;
                 pool.query(sqlPush, (err) => {
-                    if (err) throw err;
+                    if (err) res.send(err);
                     res.redirect('/projects')
                 });
             });
@@ -198,13 +198,22 @@ module.exports = (pool) => {
     router.get('/delete/:id', helpers.isLoggedIn, (req, res, next) => {
         let projectid = parseInt(req.params.id);
         let sqlDelete = `DELETE FROM members WHERE projectid = $1`;
-        pool.query(sqlDelete, [projectid], (err, response) => {
-            if (err) throw err;
-            let sqlDeleteNext = `DELETE FROM projects WHERE projectid = $1`;
-            pool.query(sqlDeleteNext, [projectid], (err, response) => {
+        let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+        pool.query(sqladmin, (err, admin) => {
+            admin = admin.rows;
+            let isadmin = admin[0].isadmin;
+            if (isadmin == true){
+            pool.query(sqlDelete, [projectid], (err, response) => {
                 if (err) throw err;
-                res.redirect('/projects')
+                let sqlDeleteNext = `DELETE FROM projects WHERE projectid = $1`;
+                pool.query(sqlDeleteNext, [projectid], (err, response) => {
+                    if (err) res.send(err);
+                    res.redirect('/projects')
+                })
             });
+            } else {
+                res.redirect('/')
+            }
         });
     });
 
@@ -248,7 +257,7 @@ module.exports = (pool) => {
         (time AT TIME ZONE 'Asia/Jakarta' AT time zone 'asia/jakarta')::time timeactivity,
         title, description, author
         FROM activity WHERE projectid = ${projectid}`;
-        let sqlProjectName = `SELECT DISTINCT members.projectid, projects.name
+        let sqlProjectName = `SELECT DISTINCT members.projectid, projects.name projectname
         FROM members INNER JOIN projects USING (projectid) 
         INNER JOIN users USING (userid) WHERE projectid = ${projectid}`;
         function convertDateTerm(date) {
@@ -268,6 +277,26 @@ module.exports = (pool) => {
                 pool.query(sqladmin, (err, admin) => {
                     admin = admin.rows;
                     let isadmin = admin[0].isadmin;
+                    let dataproject = result.rows;
+                    let dataactivity = response.rows;
+                    dataactivity = dataactivity.map(data => {
+                        data.dateactivity = moment(data.dateactivity).format('YYYY-MM-DD');
+                        data.timeactivity = moment(data.timeactivity, 'HH:mm:ss.SSS').format('HH:mm:ss');
+                        return data;
+                    })
+                    let dateonly = dataactivity.map(data => data.dateactivity);
+                    dateunix = dateonly.filter((date, index, arr) => {
+                        return arr.indexOf(date) == index;
+                    })
+                    let activitydate = dateunix.map(date => {
+                        let dataindate = dataactivity.filter( item => item.dateactivity == date);
+                        return {
+                            date: convertDateTerm(date),
+                            data: dataindate
+                        }
+                    })
+                    projectname = dataproject.map(data => data.projectname);
+
                     if (err) {
                         res.send(err)
                     }
@@ -275,10 +304,10 @@ module.exports = (pool) => {
                         title: 'Activity',
                         path: 'projects',
                         projectid,
+                        projectname,
+                        activitydate,
                         isadmin,
-                        moment,
-                        result: result.rows,
-                        response: response.rows
+                        moment
                     });
                 });
             });
@@ -581,7 +610,7 @@ module.exports = (pool) => {
 
             sqlPostIssues = `INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author, parenttask, createddate, updateddate, files) VALUES (${projectid}, '${tracker}', '${subject}', '${description}', '${status}', '${priority}', ${assignee}, '${startdate}', '${duedate}', ${estimatedtime}, ${done}, ${req.session.user.userid}, '${parenttask}', now(), now(), '${nameFile}')`;
 
-            
+
             sampleFile.mv(path.join(__dirname, `../public/images/${nameFile}`), function (err) {
                 if (err)
                     return res.status(500).send(err);
@@ -651,11 +680,11 @@ module.exports = (pool) => {
                 }
                 res.redirect(`/projects/issues/${projectid}`)
             })
-        } else {           
+        } else {
             let sampleFile = req.files.sampleFile;
             let nameFile = sampleFile.name.replace(/ /g, "_")
             nameFile = Date.now() + '_' + nameFile
-            sqlPostIssues = `UPDATE issues SET projectid = ${projectid}, tracker = '${tracker}', subject = '${subject}', description = '${description}', status = '${status}', priority = '${priority}', assignee = ${assignee}, startdate = '${startdate}', duedate = '${duedate}', estimatedtime = ${estimatedtime}, done = ${done}, author = ${req.session.user.userid}, parenttask = '${parenttask}', createddate = now(), updateddate = now(), files = '${nameFile}' WHERE issueid = ${ issueid }`;
+            sqlPostIssues = `UPDATE issues SET projectid = ${projectid}, tracker = '${tracker}', subject = '${subject}', description = '${description}', status = '${status}', priority = '${priority}', assignee = ${assignee}, startdate = '${startdate}', duedate = '${duedate}', estimatedtime = ${estimatedtime}, done = ${done}, author = ${req.session.user.userid}, parenttask = '${parenttask}', createddate = now(), updateddate = now(), files = '${nameFile}' WHERE issueid = ${issueid}`;
             sampleFile.mv(path.join(__dirname, `../public/images/${nameFile}`), function (err) {
                 if (err)
                     return res.status(500).send(err);
