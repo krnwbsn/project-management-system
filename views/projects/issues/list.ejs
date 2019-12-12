@@ -161,7 +161,6 @@
                         <% if(option.oesttime == "true") { %><th scope="col">Est. Time</th><% } %>
                         <% if(option.odone == "true") { %><th scope="col">Done</th><% } %>
                         <% if(option.oauthor == "true") { %><th scope="col">Author</th><% } %>
-                        <th scope="col">P. Task</th>
                         <th scope="col">File</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -183,7 +182,6 @@
                         <% if(option.oesttime == "true") { %><td><%= item.estimatedtime %></td><% } %>
                         <% if(option.odone == "true") { %><td><%= item.done %></td><% } %>
                         <% if(option.oauthor == "true") { %><td><%= item.author %></td><% } %>
-                        <td><%= item.parenttaskname %></td>
                         <td><a href="/images/<%= item.files %>"><button class="btn btn-outline-dark"
                                     <%= item.files == 'null' ? ' disabled' : '' %>><i
                                         class="fas fa-file-download"></i></a></td>

@@ -15,8 +15,8 @@
             <h1>Activity</h1>
             <hr />
             <h3>Project #<%= projectid %> (<%= projectname %>)</h3>
+            <% activitydate.forEach((item) => { %>
             <div class="card bg-light mb-3" style="max-width: 40rem;">
-                <% activitydate.forEach((item) => { %>
                     <div class="card-header">
                         <strong><%= item.date %></strong>
                     </div>

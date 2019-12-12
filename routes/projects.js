@@ -590,13 +590,14 @@ module.exports = (pool) => {
 
     router.post('/issues/:id/add', helpers.isLoggedIn, (req, res, next) => {
         let projectid = parseInt(req.params.id);
-        let { tracker, subject, status, description, priority, assignee, startdate, duedate, estimatedtime, done, parenttask, file } = req.body;
-        startdate = moment(startdate).format("DD-MM-YYYY");
-        duedate = moment(duedate).format("DD-MM-YYYY");
+        let { tracker, subject, status, description, priority, assignee, startdate, duedate, estimatedtime, done, files } = req.body;
+        startdate = moment(startdate).format("MM-DD-YYYY");
+        duedate = moment(duedate).format("MM-DD-YYYY");
         let sqlPostIssues = '';
         if (!req.files || Object.keys(req.files).length === 0) {
 
-            sqlPostIssues = `INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author, parenttask, createddate, updateddate, files) VALUES (${projectid}, '${tracker}', '${subject}', '${description}', '${status}', '${priority}', ${assignee}, '${startdate}', '${duedate}', ${estimatedtime}, ${done}, ${req.session.user.userid}, '${parenttask}', now(), now(), 'null')`;
+            sqlPostIssues = `INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author, createddate, updateddate, files) VALUES (${projectid}, '${tracker}', '${subject}', '${description}', '${status}', '${priority}', ${assignee}, '${startdate}', '${duedate}', ${estimatedtime}, ${done}, ${req.session.user.userid}, now(), now(), 'null')`;
+            console.log(sqlPostIssues)
             pool.query(sqlPostIssues, (err, result) => {
                 if (err) {
                     res.send(err)
@@ -608,8 +609,8 @@ module.exports = (pool) => {
             let nameFile = sampleFile.name.replace(/ /g, "_")
             nameFile = Date.now() + '_' + nameFile
 
-            sqlPostIssues = `INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author, parenttask, createddate, updateddate, files) VALUES (${projectid}, '${tracker}', '${subject}', '${description}', '${status}', '${priority}', ${assignee}, '${startdate}', '${duedate}', ${estimatedtime}, ${done}, ${req.session.user.userid}, '${parenttask}', now(), now(), '${nameFile}')`;
-
+            sqlPostIssues = `INSERT INTO issues(projectid, tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, author, createddate, updateddate, files) VALUES (${projectid}, '${tracker}', '${subject}', '${description}', '${status}', '${priority}', ${assignee}, '${startdate}', '${duedate}', ${estimatedtime}, ${done}, ${req.session.user.userid}, now(), now(), '${nameFile}')`;
+            console.log(sqlPostIssues)
 
             sampleFile.mv(path.join(__dirname, `../public/images/${nameFile}`), function (err) {
                 if (err)
@@ -639,8 +640,9 @@ module.exports = (pool) => {
 			LEFT JOIN issues i2
             ON i1.parenttask = i2.issueid WHERE i1.issueid = ${issueid}`;
         pool.query(sqlGetEdit, (err, data) => {
-            let sqlGetName = `SELECT members.projectid, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM members INNER JOIN users ON members.userid = users.userid WHERE members.projectid = ${projectid}`;
+            let sqlGetName = `SELECT members.projectid, issues.assignee, CONCAT(users.firstname,' ',users.lastname) AS fullname FROM members INNER JOIN users ON members.userid = users.userid INNER JOIN issues ON users.userid = issues.assignee WHERE issues.issueid = ${issueid}`;
             pool.query(sqlGetName, (err, result) => {
+                console.log(result)
                 const subquery = `SELECT issues.issueid FROM issues WHERE projectid=${projectid} AND issueid=${issueid}`;
                 let sqlParent = `SELECT issues.issueid, subject FROM issues WHERE issueid NOT IN (${subquery})`;
                 pool.query(sqlParent, (err, response) => {
@@ -657,6 +659,7 @@ module.exports = (pool) => {
                             projectid,
                             moment,
                             isadmin,
+                            ptask: data.rows,
                             data: data.rows[0],
                             result: result.rows[0],
                             response: response.rows[0],
@@ -671,28 +674,36 @@ module.exports = (pool) => {
     router.post('/issues/:id/edit/:issueid', helpers.isLoggedIn, (req, res, next) => {
         let projectid = parseInt(req.params.id);
         let issueid = parseInt(req.params.issueid);
-        let { tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, parenttask } = req.body
+        let { tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, spenttime, targetversion } = req.body
         if (!req.files || Object.keys(req.files).length === 0) {
-            sqlPostIssues = `UPDATE issues SET projectid = ${projectid}, tracker = '${tracker}', subject = '${subject}', description = '${description}', status = '${status}', priority = '${priority}', assignee = ${assignee}, startdate = '${startdate}', duedate = '${duedate}', estimatedtime = ${estimatedtime}, done = ${done}, author = ${req.session.user.userid}, parenttask = '${parenttask}', createddate = now(), updateddate = now(), files = 'null' WHERE issueid = ${issueid}`;
+            sqlPostIssues = `UPDATE issues SET projectid = ${projectid}, tracker = '${tracker}', subject = '${subject}', description = '${description}', status = '${status}', priority = '${priority}', startdate = '${startdate}', duedate = '${duedate}', estimatedtime = ${estimatedtime}, spenttime = ${spenttime}, done = ${done}, author = ${req.session.user.userid}, createddate = now(), updateddate = now(), targetversion = '${targetversion}' WHERE issueid = ${issueid}`;
             pool.query(sqlPostIssues, (err, result) => {
-                if (err) {
-                    res.send(err)
-                }
-                res.redirect(`/projects/issues/${projectid}`)
+                let sqlAct = `INSERT INTO activity(projectid, title, time, description, author) VALUES(${projectid}, '[${tracker}]', now(), '${subject} #${issueid} ${status} - Done (%): ${done}, Spent Time (hours): ${spenttime}', 'author: ${req.session.user.userid}')`
+                console.log(sqlAct)
+                pool.query(sqlAct, (err, activity) => {
+                    if (err) {
+                        res.send(err)
+                    }
+                    res.redirect(`/projects/issues/${projectid}`)
+                })
             })
         } else {
             let sampleFile = req.files.sampleFile;
             let nameFile = sampleFile.name.replace(/ /g, "_")
             nameFile = Date.now() + '_' + nameFile
-            sqlPostIssues = `UPDATE issues SET projectid = ${projectid}, tracker = '${tracker}', subject = '${subject}', description = '${description}', status = '${status}', priority = '${priority}', assignee = ${assignee}, startdate = '${startdate}', duedate = '${duedate}', estimatedtime = ${estimatedtime}, done = ${done}, author = ${req.session.user.userid}, parenttask = '${parenttask}', createddate = now(), updateddate = now(), files = '${nameFile}' WHERE issueid = ${issueid}`;
+            sqlPostIssues = `UPDATE issues SET projectid = ${projectid}, tracker = '${tracker}', subject = '${subject}', description = '${description}', status = '${status}', priority = '${priority}', startdate = '${startdate}', duedate = '${duedate}', estimatedtime = ${estimatedtime}, spenttime = ${spenttime}, done = ${done}, author = ${req.session.user.userid}, createddate = now(), updateddate = now(), targetversion = '${targetversion}' WHERE issueid = ${issueid}`;
             sampleFile.mv(path.join(__dirname, `../public/images/${nameFile}`), function (err) {
                 if (err)
                     return res.status(500).send(err);
-                pool.query(sqlPostIssues, (err, result) => {
-                    if (err) {
-                        res.send(err)
-                    }
-                    res.redirect(`/projects/issues/${projectid}`)
+                    pool.query(sqlPostIssues, (err, result) => {
+                    let sqlAct = `INSERT INTO activity(projectid, title, time, description, author) VALUES(${projectid}, '[${tracker}]', now(), '${subject} #${issueid} ${status} - Done (%): ${done}, Spent Time (hours): ${spenttime}', 'author: ${req.session.user.userid}')`
+                        console.log(sqlAct)
+                    pool.query(sqlAct, (err, activity) => {
+                        if (err) {
+                            res.send(err)
+                        }
+                        res.redirect(`/projects/issues/${projectid}`)
+                    })
                 })
             });
         }
@@ -703,14 +714,17 @@ module.exports = (pool) => {
         let issueid = parseInt(req.params.issueid);
         let sqlDelIssue = `DELETE FROM issues WHERE projectid = ${projectid} AND issueid = ${issueid}`
         pool.query(sqlDelIssue, (err, result) => {
-            let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
-            pool.query(sqladmin, (err, admin) => {
-                admin = admin.rows;
-                let isadmin = admin[0].isadmin;
-                if (err) {
-                    res.send(err)
-                };
-                res.redirect(`/projects/issues/${projectid}`);
+            let sqlAct = `DELETE FROM activity WHERE projectid = ${projectid}`
+            pool.query(sqlAct, (err, activity) => {
+                let sqladmin = `SELECT isadmin FROM users WHERE userid = ${req.session.user.userid}`;
+                pool.query(sqladmin, (err, admin) => {
+                    admin = admin.rows;
+                    let isadmin = admin[0].isadmin;
+                    if (err) {
+                        res.send(err)
+                    };
+                    res.redirect(`/projects/issues/${projectid}`);
+                })
             })
         })
     });

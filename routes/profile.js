@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const path = require('path');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const helpers = require('../helpers/util')
 const moment = require('moment');
 moment().format();
@@ -28,14 +30,17 @@ module.exports = (pool) => {
     });
 
     router.post('/', helpers.isLoggedIn, (req, res, next) => {
-        let sql = `UPDATE users SET firstname=$1, lastname=$2, password=$3, role=$4, typejob=$5 WHERE userid=$6`;
-        let insert = [req.body.firstname, req.body.lastname, req.body.password, req.body.role, req.body.typejob, req.session.user.userid];
-        pool.query(sql, insert, (err) => {
-            if (err) {
-                res.send(err);
-            }
-            res.redirect('/profile');
-        });
+        let { firstname, lastname, password, role, typejob } = req.body
+        bcrypt.hash(password, saltRounds, (err, hash) => {
+            let sql = `UPDATE users SET firstname=$1, lastname=$2, password=$3, role=$4, typejob=$5 WHERE userid=$6`;
+            let insert = [firstname, lastname, hash, role, typejob, req.session.user.userid];
+            pool.query(sql, insert, (err) => {
+                if (err) {
+                    res.send(err);
+                }
+                res.redirect('/profile');
+            });
+        })
     });
 
     return router;

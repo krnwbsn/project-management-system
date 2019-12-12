@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const path = require('path');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const helpers = require('../helpers/util');
 const moment = require('moment');
 
@@ -121,11 +123,14 @@ module.exports = (pool) => {
 
   router.post('/edit/:id', helpers.isLoggedIn, (req, res, next) => {
     let uid = parseInt(req.params.id);
-    let sqlEdit = `UPDATE users SET firstname=$1, lastname=$2, email=$3, password=$4, role=$5, typejob=$6 WHERE userid=$7`;
-    let insert = [req.body.firstname, req.body.lastname, req.body.email, req.body.password, req.body.role, req.body.typejob, uid];
-    pool.query(sqlEdit, insert, (err) => {
-      if (err) throw err;
-      res.redirect('/users');
+    let { firstname, lastname, email, password, role, typejob } = req.body;
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+      let sqlEdit = `UPDATE users SET firstname=$1, lastname=$2, email=$3, password=$4, role=$5, typejob=$6 WHERE userid=$7`;
+      let insert = [firstname, lastname, email, hash, role, typejob, uid];
+      pool.query(sqlEdit, insert, (err) => {
+        if (err) throw err;
+        res.redirect('/users');
+      })
     })
   });
 
@@ -139,7 +144,7 @@ module.exports = (pool) => {
         };
         admin = admin.rows;
         let isadmin = admin[0].isadmin;
-        if (isadmin == 'true') {
+        if (isadmin == true) {
           res.render('users/add', {
             title: 'Add Users',
             path: 'users',
@@ -155,11 +160,15 @@ module.exports = (pool) => {
   });
 
   router.post('/add', helpers.isLoggedIn, (req, res, next) => {
-    let sqlAdd = `INSERT INTO users(firstname, lastname, email, password, typejob, role, issuesoptions, membersoptions, projectsoptions, usersoptions, isadmin) VALUES('${req.body.firstname}', '${req.body.lastname}', '${req.body.email}', '${req.body.password}', '${req.body.typejob}', '${req.body.role}', '{}', '{}', '{}', '{}', 'false')`;
-    pool.query(sqlAdd, (err, result) => {
-      if (err) throw err;
-      res.redirect('/users');
-    });
+    let { firstname, lastname, email, password, role, typejob, issuesoptions, membersoptions, projectsoptions, usersoptions, isadmin } = req.body;
+    
+    bcrypt.hash(password, saltRounds, (err, hash) => {
+      let sqlAdd = `INSERT INTO users(firstname, lastname, email, password, typejob, role, issuesoptions, membersoptions, projectsoptions, usersoptions, isadmin) VALUES('${firstname}', '${lastname}', '${email}', '${hash}', '${typejob}', '${role}', '{}', '{}', '{}', '{}', 'false')`;
+      pool.query(sqlAdd, (err, result) => {
+        if (err) throw err;
+        res.redirect('/users');
+      });
+    })
   });
 
   router.get('/delete/:id', helpers.isLoggedIn, (req, res, next) => {
