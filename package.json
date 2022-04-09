@@ -19,7 +19,7 @@
     "express-fileupload": "^1.1.6",
     "express-session": "^1.17.0",
     "http-errors": "~1.6.3",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "morgan": "~1.9.1",
     "path": "^0.12.7",
     "pg": "^7.14.0"
